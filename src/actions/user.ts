@@ -3,8 +3,6 @@
 import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-export const runtime = 'edge';
-
 export async function selectCompanion(companionType: string) {
   const prisma = getPrisma();
   // For the hackathon, we'll create a single "dummy" user session

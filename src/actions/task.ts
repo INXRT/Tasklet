@@ -3,8 +3,6 @@
 import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export const runtime = 'edge';
-
 export async function createTask(userId: string, title: string, dueDate: Date, durationMinutes: number = 60) {
   const prisma = getPrisma();
   const task = await prisma.task.create({

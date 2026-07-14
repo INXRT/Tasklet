@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { selectCompanion } from "@/actions/user";
 import { Companion3D } from "@/components/ui/Companion3D";
 
+export const runtime = 'edge';
+
 const COMPANIONS = [
   {
     id: "DRAGON",
