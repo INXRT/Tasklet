@@ -4,6 +4,6 @@ import { getRequestContext } from '@cloudflare/next-on-pages'
 
 export function getPrisma() {
   const env = getRequestContext().env as any;
-  const adapter = new PrismaD1(env.DB);
+  const adapter = new PrismaD1(env.tasklet_db);
   return new PrismaClient({ adapter });
 }
