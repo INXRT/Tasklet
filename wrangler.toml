@@ -1,0 +1,9 @@
+name = "tasklet"
+compatibility_date = "2024-03-20"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+[[d1_databases]]
+binding = "tasklet_db"
+database_name = "tasklet-db"
+database_id = "621c70ec-a893-4d54-ade9-1a1980fa8333"

@@ -1,8 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "./DashboardClient";
 
+export const runtime = 'edge';
+
 export default async function DashboardPage() {
+  const prisma = getPrisma();
   const user = await prisma.user.findFirst({
     include: {
       tasks: {

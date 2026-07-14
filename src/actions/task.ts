@@ -1,9 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+export const runtime = 'edge';
+
 export async function createTask(userId: string, title: string, dueDate: Date, durationMinutes: number = 60) {
+  const prisma = getPrisma();
   const task = await prisma.task.create({
     data: {
       userId,
@@ -20,6 +23,7 @@ export async function createTask(userId: string, title: string, dueDate: Date, d
 }
 
 export async function updateTask(id: string, data: any) {
+  const prisma = getPrisma();
   const task = await prisma.task.update({
     where: { id },
     data,
@@ -30,6 +34,7 @@ export async function updateTask(id: string, data: any) {
 }
 
 export async function toggleTaskCompletion(id: string, currentStatus: boolean) {
+  const prisma = getPrisma();
   // Toggle completion status
   // Also, when completed, reward user with coins
   
@@ -57,6 +62,7 @@ export async function toggleTaskCompletion(id: string, currentStatus: boolean) {
 }
 
 export async function deleteTask(id: string) {
+  const prisma = getPrisma();
   await prisma.task.delete({
     where: { id },
   });

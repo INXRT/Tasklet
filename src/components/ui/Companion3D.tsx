@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, OrbitControls, Environment, ContactShadows } from "@react-three/drei";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, Suspense } from "react";
 import * as THREE from "three";
 
 type CompanionType = "DRAGON" | "GRIFFIN" | "PHOENIX";
@@ -60,30 +60,32 @@ export function Companion3D({ type }: { type: CompanionType }) {
   return (
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
       <Canvas shadows camera={{ position: [0, 0, 5], fov: 45 }}>
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
-        
-        <CoreMesh type={type} />
-        
-        <Environment preset="city" />
-        
-        <ContactShadows 
-          position={[0, -2, 0]} 
-          opacity={0.4} 
-          scale={10} 
-          blur={2} 
-          far={4} 
-          color={COMPANION_COLORS[type] || COMPANION_COLORS.DRAGON}
-        />
-        
-        <OrbitControls 
-          enableZoom={false} 
-          enablePan={false}
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI / 1.5}
-          autoRotate
-          autoRotateSpeed={0.5}
-        />
+        <Suspense fallback={null}>
+          <ambientLight intensity={0.5} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
+          
+          <CoreMesh type={type} />
+          
+          <Environment preset="city" />
+          
+          <ContactShadows 
+            position={[0, -2, 0]} 
+            opacity={0.4} 
+            scale={10} 
+            blur={2} 
+            far={4} 
+            color={COMPANION_COLORS[type] || COMPANION_COLORS.DRAGON}
+          />
+          
+          <OrbitControls 
+            enableZoom={false} 
+            enablePan={false}
+            minPolarAngle={Math.PI / 3}
+            maxPolarAngle={Math.PI / 1.5}
+            autoRotate
+            autoRotateSpeed={0.5}
+          />
+        </Suspense>
       </Canvas>
     </div>
   );
