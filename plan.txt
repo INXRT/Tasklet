@@ -1,0 +1,18 @@
+Gamified goal checker
+
+Description:
+People often start monthly goals with enthusiasm but gradually lose motivation as deadlines approach. Existing goal trackers typically show only progress percentages or checklists, making it easy to ignore unfinished tasks. Develop a system that gamifies accountability by visually increasing urgency over time through changing avatars, emojis, animations, or other creative indicators while tracking progress and encouraging users to stay consistent before the deadline.
+
+What we don't want:
+-A simple to-do list or checklist application.
+-Static progress bars without engaging feedback.
+-Reminder notifications as the only motivational feature.
+
+
+Description:
+People often start monthly goals with enthusiasm but gradually lose motivation as deadlines approach. Existing goal trackers typically show only progress percentages or checklists, making it easy to ignore unfinished tasks. Develop a system that gamifies accountability by visually increasing urgency over time through changing avatars, emojis, animations, or other creative indicators while tracking progress and encouraging users to stay consistent before the deadline.
+
+What we don't want:
+-A simple to-do list or checklist application.
+-Static progress bars without engaging feedback.
+-Reminder notifications as the only motivational feature.

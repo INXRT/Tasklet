@@ -1,0 +1,99 @@
+"use client";
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight, Sparkles, Clock, Target, BrainCircuit } from "lucide-react";
+
+export default function Home() {
+  return (
+    <div className="flex-1 flex flex-col justify-center items-center p-4 md:p-8 z-10 relative min-h-[90vh]">
+      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[minmax(220px,auto)]">
+        
+        {/* Main Hero Bento Box */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="md:col-span-8 md:row-span-2 rounded-[2.5rem] bg-white/[0.01] border border-white/10 backdrop-blur-3xl p-10 md:p-16 flex flex-col justify-between relative overflow-hidden group shadow-2xl"
+        >
+          {/* Card Noise Overlay */}
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
+          
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
+          
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono tracking-widest text-zinc-400 mb-10 backdrop-blur-sm uppercase">
+              <Sparkles className="w-3 h-3 text-indigo-400" />
+              <span>System Initialization / Productivity</span>
+            </div>
+            
+            <h1 className="text-7xl md:text-[9rem] font-normal tracking-tighter mb-4 text-white leading-[0.85]">
+              Gamify <br/>
+              <span className="text-zinc-600 italic font-serif">existence.</span>
+            </h1>
+          </div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8 mt-16">
+            <p className="text-lg md:text-xl text-zinc-400 max-w-sm font-light leading-relaxed">
+              Familiar connects your real-world consistency to a living digital companion. Your actions have physical consequences.
+            </p>
+            <Link href="/onboarding">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-4 px-10 py-5 bg-white text-black rounded-[2rem] shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_80px_rgba(255,255,255,0.3)] transition-all duration-500"
+              >
+                <span className="font-sans font-medium tracking-wide text-lg">Commence</span>
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Small Feature Bento 1 */}
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="md:col-span-4 md:row-span-1 rounded-[2.5rem] bg-white/[0.01] border border-white/10 backdrop-blur-3xl p-10 flex flex-col justify-between relative overflow-hidden group"
+        >
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          
+          <Clock className="w-10 h-10 text-zinc-400 mb-4 group-hover:text-white transition-colors duration-500" />
+          <div className="relative z-10">
+            <h3 className="text-4xl md:text-5xl mb-2 text-white font-serif tracking-tight">Urgency</h3>
+            <p className="text-xs text-zinc-500 font-mono tracking-widest">DEADLINE APPROACHING</p>
+          </div>
+        </motion.div>
+
+        {/* Small Feature Bento 2 */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] bg-white/[0.01] border border-white/10 backdrop-blur-3xl p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
+        >
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
+          <Target className="w-12 h-12 text-zinc-400 mb-6 group-hover:scale-110 transition-transform duration-700 ease-out" />
+          <span className="font-mono text-xs text-zinc-500 tracking-widest">PRECISION</span>
+        </motion.div>
+
+        {/* Small Feature Bento 3 */}
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] bg-white/[0.01] border border-white/10 backdrop-blur-3xl p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
+        >
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
+          <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          
+          <BrainCircuit className="w-12 h-12 text-zinc-400 mb-6 group-hover:text-indigo-400 transition-colors duration-500 relative z-10" />
+          <span className="font-mono text-xs text-zinc-500 tracking-widest relative z-10">AI DRIVEN</span>
+        </motion.div>
+
+      </div>
+    </div>
+  );
+}
