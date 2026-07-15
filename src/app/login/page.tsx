@@ -2,7 +2,6 @@
 
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
-import { TypewriterEffect } from "@/components/ui/TypewriterEffect";
 
 export default function LoginPage() {
   return (
