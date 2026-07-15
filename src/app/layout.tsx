@@ -24,7 +24,7 @@ import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
 import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "Sidekick | Pokémon Manager",
+  title: "PokéQuest | Pokémon Manager",
   description: "A gamified productivity companion.",
 };
 
