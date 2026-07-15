@@ -34,7 +34,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${instrument.variable} ${mono.variable} antialiased dark`}
     >
-      <body className="h-screen w-screen overflow-hidden font-sans text-foreground selection:bg-white/20 flex flex-col">
+      <body className="h-dvh w-dvw overflow-hidden font-sans text-foreground selection:bg-white/20 flex flex-col">
         <MediaBackground />
         
         {/* The Desktop environment container */}
