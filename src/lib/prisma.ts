@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaD1 } from '@prisma/adapter-d1'
-import { getRequestContext } from '@cloudflare/next-on-pages'
+
+let prismaInstance: PrismaClient | null = null;
 
 export function getPrisma() {
-  const env = getRequestContext().env as any;
-  const adapter = new PrismaD1(env.tasklet_db);
-  return new PrismaClient({ adapter });
+  // Reuse singleton in development to avoid exhausting connections
+  if (!prismaInstance) {
+    prismaInstance = new PrismaClient();
+  }
+  return prismaInstance;
 }

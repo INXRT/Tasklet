@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { selectCompanion } from "@/actions/user";
 import { Companion3D } from "@/components/ui/Companion3D";
 
-export const runtime = 'edge';
 
 const COMPANIONS = [
   {
@@ -79,7 +78,7 @@ export default function OnboardingPage() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
             <Sparkles className="w-4 h-4 text-zinc-400" />
             <span className="text-xs font-mono tracking-widest uppercase text-zinc-300">Initialization Sequence</span>
           </div>
@@ -102,7 +101,7 @@ export default function OnboardingPage() {
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
               onClick={() => handleSelect(companion.id)}
-              className={`relative group cursor-pointer rounded-[2.5rem] bg-white/[0.02] border transition-all duration-700 ease-out flex flex-col items-center p-4 overflow-hidden shadow-lg backdrop-blur-md ${
+              className={`relative group cursor-pointer rounded-[2.5rem] bg-white/[0.02] border transition-all duration-700 ease-out flex flex-col items-center p-4 overflow-hidden shadow-lg ${
                 hoveredIdx === idx ? companion.border : "border-white/5"
               } ${isPending ? "opacity-50 pointer-events-none cursor-wait" : ""}`}
             >

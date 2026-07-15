@@ -2,7 +2,6 @@ import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "./DashboardClient";
 
-export const runtime = 'edge';
 
 export default async function DashboardPage() {
   const prisma = getPrisma();

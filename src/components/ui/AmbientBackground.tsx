@@ -20,7 +20,7 @@ export function AmbientBackground() {
         }}
       />
       
-      {/* Glow 1 */}
+      {/* Glow 1 — uses a pre-blurred radial gradient instead of animating blur */}
       <motion.div
         animate={{
           x: [0, 150, 0, -150, 0],
@@ -32,10 +32,11 @@ export function AmbientBackground() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-600/15 blur-[160px] mix-blend-screen"
+        className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full mix-blend-screen pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.12) 0%, transparent 70%)' }}
       />
 
-      {/* Glow 2 */}
+      {/* Glow 2 — uses a pre-blurred radial gradient instead of animating blur */}
       <motion.div
         animate={{
           x: [0, -150, 100, 150, 0],
@@ -47,11 +48,12 @@ export function AmbientBackground() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] rounded-full bg-orange-600/10 blur-[180px] mix-blend-screen"
+        className="absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] rounded-full mix-blend-screen pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(234,88,12,0.08) 0%, transparent 70%)' }}
       />
       
-      {/* Glass overlay to smooth everything out */}
-      <div className="absolute inset-0 bg-[#050505]/60 backdrop-blur-[80px] pointer-events-none" />
+      {/* Matte overlay — solid dark tint, no blur needed */}
+      <div className="absolute inset-0 bg-[#050505]/50 pointer-events-none" />
     </div>
   );
 }

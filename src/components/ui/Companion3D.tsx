@@ -16,18 +16,15 @@ const COMPANION_COLORS: Record<CompanionType, string> = {
 function CoreMesh({ type }: { type: CompanionType }) {
   const meshRef = useRef<THREE.Mesh>(null);
   
-  // Create a material with glassmorphic properties
-  const material = useMemo(() => new THREE.MeshPhysicalMaterial({
+  // Create a lightweight material that fakes glassmorphism without killing framerates
+  const material = useMemo(() => new THREE.MeshStandardMaterial({
     color: COMPANION_COLORS[type] || COMPANION_COLORS.DRAGON,
-    transmission: 0.9,
-    opacity: 1,
-    metalness: 0.2,
-    roughness: 0.1,
-    ior: 1.5,
-    thickness: 2,
-    specularIntensity: 1,
+    transparent: true,
+    opacity: 0.8,
+    metalness: 0.8,
+    roughness: 0.2,
     emissive: COMPANION_COLORS[type] || COMPANION_COLORS.DRAGON,
-    emissiveIntensity: 0.2,
+    emissiveIntensity: 0.4,
   }), [type]);
 
   // Subtle rotation
@@ -61,21 +58,11 @@ export function Companion3D({ type }: { type: CompanionType }) {
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
       <Canvas shadows camera={{ position: [0, 0, 5], fov: 45 }}>
         <Suspense fallback={null}>
-          <ambientLight intensity={0.5} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
+          <ambientLight intensity={1.5} />
           
           <CoreMesh type={type} />
           
           <Environment preset="city" />
-          
-          <ContactShadows 
-            position={[0, -2, 0]} 
-            opacity={0.4} 
-            scale={10} 
-            blur={2} 
-            far={4} 
-            color={COMPANION_COLORS[type] || COMPANION_COLORS.DRAGON}
-          />
           
           <OrbitControls 
             enableZoom={false} 
