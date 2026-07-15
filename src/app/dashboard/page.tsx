@@ -1,17 +1,29 @@
 import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "./DashboardClient";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
   const prisma = getPrisma();
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
     include: {
       tasks: {
         orderBy: { dueDate: "asc" }
       },
-      pokemons: true
+      pokemons: true,
+      inventory: {
+        include: { shopItem: true }
+      }
     }
   });
   

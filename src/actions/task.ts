@@ -2,8 +2,15 @@
 
 import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function createTask(userId: string, title: string, dueDate: Date, durationMinutes: number = 60) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || session.user.id !== userId) {
+    throw new Error("Unauthorized");
+  }
+
   const prisma = getPrisma();
   const task = await prisma.task.create({
     data: {
@@ -21,7 +28,17 @@ export async function createTask(userId: string, title: string, dueDate: Date, d
 }
 
 export async function updateTask(id: string, data: any) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
   const prisma = getPrisma();
+  
+  // Verify ownership
+  const existingTask = await prisma.task.findUnique({ where: { id } });
+  if (!existingTask || existingTask.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
   const task = await prisma.task.update({
     where: { id },
     data,
@@ -32,7 +49,16 @@ export async function updateTask(id: string, data: any) {
 }
 
 export async function toggleTaskCompletion(id: string, currentStatus: boolean) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
   const prisma = getPrisma();
+  
+  // Verify ownership
+  const existingTask = await prisma.task.findUnique({ where: { id } });
+  if (!existingTask || existingTask.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
   
   const task = await prisma.task.update({
     where: { id },
@@ -106,7 +132,17 @@ export async function toggleTaskCompletion(id: string, currentStatus: boolean) {
 }
 
 export async function deleteTask(id: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
   const prisma = getPrisma();
+  
+  // Verify ownership
+  const existingTask = await prisma.task.findUnique({ where: { id } });
+  if (!existingTask || existingTask.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
   await prisma.task.delete({
     where: { id },
   });

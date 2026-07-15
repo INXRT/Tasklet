@@ -4,15 +4,15 @@ import { getPrisma } from "@/lib/prisma";
 
 import { revalidatePath } from "next/cache";
 
-export async function selectStarterPokemon(pokemonId: string) {
+export async function selectStarterPokemon(userId: string, pokemonId: string) {
   try {
     const prisma = getPrisma();
-    let user = await prisma.user.findFirst();
+    let user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
     
     if (!user) {
-      user = await prisma.user.create({
-        data: {}
-      });
+      return { success: false, error: "User not found" };
     }
 
     // Create the UserPokemon

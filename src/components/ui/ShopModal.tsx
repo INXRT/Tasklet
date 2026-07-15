@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Store, Coins } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { purchaseItem } from "@/actions/shop";
-import { getPrisma } from "@/lib/prisma";
+import { createPortal } from "react-dom";
+import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
 
 interface ShopModalProps {
   isOpen: boolean;
@@ -16,6 +17,11 @@ interface ShopModalProps {
 export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps) {
   const [items, setItems] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,10 +50,10 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
     });
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100]">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -56,13 +62,17 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
           
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-2xl glass-panel rounded-[2rem] p-8 shadow-2xl overflow-hidden"
-            onClick={e => e.stopPropagation()}
-          >
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
+              <div className="w-full h-full flex items-center justify-center pointer-events-none">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+                  className="relative w-full max-w-2xl glass-panel rounded-[2rem] p-8 shadow-2xl overflow-hidden pointer-events-auto"
+                  onClick={e => e.stopPropagation()}
+                >
             <button 
               onClick={onClose}
               className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
@@ -122,9 +132,14 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
               )}
             </div>
 
-          </motion.div>
+                </motion.div>
+              </div>
+            </ScaleWrapper>
+          </div>
         </div>
       )}
     </AnimatePresence>
   );
+
+  return mounted ? createPortal(modalContent, document.body) : null;
 }

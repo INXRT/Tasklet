@@ -6,6 +6,7 @@ import { Sparkles, ArrowRight, Leaf, Flame, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { selectStarterPokemon } from "@/actions/user";
 import { Pokemon2D } from "@/components/ui/Pokemon2D";
+import { useSession } from "next-auth/react";
 
 const STARTERS = [
   {
@@ -38,16 +39,21 @@ const STARTERS = [
 ];
 
 export default function OnboardingPage() {
+  const { data: session, status } = useSession();
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
+  if (status === "unauthenticated") {
+    router.push("/login");
+  }
+
   const handleSelect = (id: string) => {
-    if (isPending) return;
+    if (isPending || !session?.user?.id) return;
     
     startTransition(async () => {
       try {
-        const result = await selectStarterPokemon(id);
+        const result = await selectStarterPokemon(session.user.id, id);
         if (result && result.error) {
           alert("Database Error: " + result.error);
           return;

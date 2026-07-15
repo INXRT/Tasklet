@@ -1,141 +1,44 @@
-"use client";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getPrisma } from "@/lib/prisma";
+import HomeClient from "./HomeClient";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { ArrowRight, Sparkles, Clock, Target, BrainCircuit } from "lucide-react";
+export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from "react";
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+  
+  let userProfile = null;
+  let urgentTask = null;
 
-const WORDS = ["tasks.", "goals.", "missions."];
+  if (session?.user?.id) {
+    const prisma = getPrisma();
+    
+    // Fetch user basic info
+    userProfile = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        name: true,
+        email: true,
+        image: true,
+        karma: true,
+      }
+    });
 
-function TypewriterEffect() {
-  const [index, setIndex] = useState(0);
-  const [subIndex, setSubIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [blink, setBlink] = useState(true);
+    // Fetch most urgent incomplete task
+    const tasks = await prisma.task.findMany({
+      where: { 
+        userId: session.user.id,
+        isCompleted: false,
+      },
+      orderBy: { dueDate: 'asc' },
+      take: 1
+    });
 
-  useEffect(() => {
-    const timeout = setInterval(() => setBlink((prev) => !prev), 500);
-    return () => clearInterval(timeout);
-  }, []);
-
-  useEffect(() => {
-    if (subIndex === WORDS[index].length && !isDeleting) {
-      const timeout = setTimeout(() => setIsDeleting(true), 2000); // 2 second pause
-      return () => clearTimeout(timeout);
+    if (tasks.length > 0) {
+      urgentTask = tasks[0];
     }
+  }
 
-    if (subIndex === 0 && isDeleting) {
-      setIsDeleting(false);
-      setIndex((prev) => (prev + 1) % WORDS.length);
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      setSubIndex((prev) => prev + (isDeleting ? -1 : 1));
-    }, isDeleting ? 40 : 120); // Faster delete, natural typing speed
-
-    return () => clearTimeout(timeout);
-  }, [subIndex, index, isDeleting]);
-
-  return (
-    <span className="text-zinc-300 italic font-serif drop-shadow-[0_2px_12px_rgba(0,0,0,1)]">
-      {WORDS[index].substring(0, subIndex)}
-      <span className={blink ? "opacity-100 transition-opacity" : "opacity-0 transition-opacity"}>|</span>
-    </span>
-  );
-}
-
-export default function Home() {
-  return (
-    <div className="flex-1 flex flex-col justify-center items-center p-4 md:p-8 z-10 relative min-h-[90vh]">
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[minmax(220px,auto)]">
-        
-        {/* Main Hero Bento Box */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
-          className="md:col-span-8 md:row-span-2 rounded-[2.5rem] glass-panel p-10 md:p-16 flex flex-col justify-between relative overflow-hidden group shadow-lg"
-        >
-          {/* Card Noise Overlay */}
-          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
-          
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
-          
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono tracking-widest text-zinc-400 mb-10 uppercase">
-              <Sparkles className="w-3 h-3 text-indigo-400" />
-              <span>System Initialization / Productivity</span>
-            </div>
-            
-            <h1 className="text-7xl md:text-[9rem] font-normal tracking-tighter mb-4 text-white leading-[0.85] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
-              Gamify <br/>
-              <TypewriterEffect />
-            </h1>
-          </div>
-          
-          <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8 mt-16">
-            <p className="text-lg md:text-xl text-zinc-400 max-w-sm font-light leading-relaxed">
-              Familiar connects your real-world consistency to a living digital companion. Your actions have physical consequences.
-            </p>
-            <Link href="/onboarding">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-4 px-10 py-5 bg-white text-black rounded-[2rem] shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_80px_rgba(255,255,255,0.3)] transition-all duration-500"
-              >
-                <span className="font-sans font-medium tracking-wide text-lg">Commence</span>
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* Small Feature Bento 1 */}
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.1 }}
-          className="md:col-span-4 md:row-span-1 rounded-[2.5rem] glass-panel p-10 flex flex-col justify-between relative overflow-hidden group"
-        >
-          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-          
-          <Clock className="w-10 h-10 text-zinc-400 mb-4 group-hover:text-white transition-colors duration-500" />
-          <div className="relative z-10">
-            <h3 className="text-4xl md:text-5xl mb-2 text-white font-serif tracking-tight">Urgency</h3>
-            <p className="text-xs text-zinc-500 font-mono tracking-widest">DEADLINE APPROACHING</p>
-          </div>
-        </motion.div>
-
-        {/* Small Feature Bento 2 */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.15 }}
-          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] glass-panel p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
-        >
-          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
-          <Target className="w-12 h-12 text-zinc-400 mb-6 group-hover:scale-110 transition-transform duration-700 ease-out" />
-          <span className="font-mono text-xs text-zinc-500 tracking-widest">PRECISION</span>
-        </motion.div>
-
-        {/* Small Feature Bento 3 */}
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.2 }}
-          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] glass-panel p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
-        >
-          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
-          <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          
-          <BrainCircuit className="w-12 h-12 text-zinc-400 mb-6 group-hover:text-indigo-400 transition-colors duration-500 relative z-10" />
-          <span className="font-mono text-xs text-zinc-500 tracking-widest relative z-10">AI DRIVEN</span>
-        </motion.div>
-
-      </div>
-    </div>
-  );
+  return <HomeClient userProfile={userProfile} urgentTask={urgentTask} />;
 }

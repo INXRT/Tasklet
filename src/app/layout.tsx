@@ -21,6 +21,8 @@ const mono = JetBrains_Mono({
 
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
 
+import { Providers } from "@/components/Providers";
+
 export const metadata: Metadata = {
   title: "Sidekick | Pokémon Manager",
   description: "A gamified productivity companion.",
@@ -37,14 +39,16 @@ export default function RootLayout({
       className={`${inter.variable} ${instrument.variable} ${mono.variable} antialiased dark`}
     >
       <body className="h-dvh w-dvw overflow-hidden font-sans text-foreground selection:bg-white/20 flex flex-col">
-        <MediaBackground />
-        
-        {/* The Desktop environment container */}
-        <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
-          <div className="w-full h-full flex flex-col">
-            {children}
-          </div>
-        </ScaleWrapper>
+        <Providers>
+          <MediaBackground />
+          
+          {/* The Desktop environment container */}
+          <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
+            <div className="w-full h-full flex flex-col">
+              {children}
+            </div>
+          </ScaleWrapper>
+        </Providers>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store } from "lucide-react";
+import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store, Backpack, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { TaskModal } from "@/components/ui/TaskModal";
 import { CalendarView } from "@/components/ui/CalendarView";
@@ -11,12 +11,18 @@ import { Pokemon2D } from "@/components/ui/Pokemon2D";
 import { ExpBar } from "@/components/ui/ExpBar";
 import { MoodIndicator } from "@/components/ui/MoodIndicator";
 import { ShopModal } from "@/components/ui/ShopModal";
+import { InventoryModal } from "@/components/ui/InventoryModal";
 import { POKEMON_DATA, getPokemonLevel, checkEvolution } from "@/lib/pokemon-data";
+import { signOut } from "next-auth/react";
+import { PokemonRosterModal } from "@/components/ui/PokemonRosterModal";
 
 export function DashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
   const [view, setView] = useState<"calendar" | "list">("list");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [isRosterOpen, setIsRosterOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const pokemonMeta = POKEMON_DATA[activePokemon.pokemonId];
   const level = getPokemonLevel(activePokemon.xp);
@@ -36,13 +42,10 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
-          className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[480px]"
+          className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[420px]"
         >
-          <div className="flex justify-between w-full mb-4 z-10">
+          <div className="flex justify-start w-full mb-4 z-10">
             <MoodIndicator mood={activePokemon.mood} />
-            <button onClick={() => setIsShopOpen(true)} className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white">
-              <Store className="w-5 h-5" />
-            </button>
           </div>
           
           <div className="relative w-full flex-1 rounded-2xl overflow-hidden bg-black/40 border border-white/10 z-10 flex items-center justify-center shadow-inner mb-6">
@@ -82,7 +85,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.1 }}
-          className="rounded-[2rem] glass-panel p-8 relative flex-1"
+          className="rounded-[2rem] glass-panel p-6 relative"
         >
           <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-6 uppercase">Activity Metrics</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -100,6 +103,21 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
             </div>
           </div>
         </motion.div>
+
+        {/* Scratchpad Widget */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.2 }}
+          className="rounded-[2rem] glass-panel p-5 relative flex-1 flex flex-col min-h-[120px]"
+        >
+          <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-3 uppercase">Quick Scratchpad</h3>
+          <textarea 
+            className="w-full flex-1 bg-transparent border-none outline-none resize-none text-zinc-300 placeholder:text-zinc-600 font-sans text-sm custom-scrollbar"
+            placeholder="Jot down quick thoughts here..."
+            defaultValue=""
+          />
+        </motion.div>
       </div>
 
       {/* Main Area: Calendar/Tasks */}
@@ -107,7 +125,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.15 }}
-        className="lg:col-span-8 rounded-[2rem] glass-panel p-8 relative flex flex-col"
+        className="lg:col-span-8 rounded-[2rem] glass-panel p-6 relative flex flex-col"
       >
         {/* Header */}
         <div className="flex justify-between items-center mb-8 relative z-10 border-b border-white/10 pb-6">
@@ -146,7 +164,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 relative z-10 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="flex-1 relative z-10 overflow-y-auto pr-2 custom-scrollbar pb-24">
           {view === "list" ? (
             <div className="space-y-3">
               {user.tasks.length === 0 ? (
@@ -158,7 +176,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                 user.tasks.map((task: any) => (
                   <div 
                     key={task.id} 
-                    className={`relative p-5 rounded-[1.25rem] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
+                    className={`relative p-5 rounded-[1.25rem] transition-all duration-400 flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
                       task.isCompleted 
                         ? "bg-white/5 border border-white/5 opacity-60 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]" 
                         : "bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0.5px_0.5px_1px_rgba(255,255,255,0.2)]"
@@ -189,11 +207,126 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
               )}
             </div>
           ) : (
-            <div className="h-full min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-inner">
+            <div className="h-full min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-inner mb-24">
               <CalendarView tasks={user.tasks} />
             </div>
           )}
         </div>
+      </motion.div>
+
+      {/* MacOS Style Glass Dock */}
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.3 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-3 glass-panel rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10"
+      >
+        <div className="relative">
+          <button 
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="relative group w-14 h-14 rounded-full hover:bg-white/10 transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center overflow-hidden border border-white/5"
+          >
+            {user.image ? (
+              <img src={user.image} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </div>
+            )}
+            {!isProfileOpen && (
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 text-white text-[10px] font-mono px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md whitespace-nowrap z-50">
+                {user.name || "Profile"}
+              </div>
+            )}
+          </button>
+        </div>
+
+
+
+        <div className="w-px h-8 bg-white/10 mx-1 rounded-full"></div>
+
+        <button 
+          onClick={() => setIsShopOpen(true)}
+          className="relative group p-4 rounded-full hover:bg-white/10 transition-all duration-300 text-amber-400 hover:scale-110 active:scale-95"
+        >
+          <Store className="w-6 h-6 drop-shadow-md" />
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 text-white text-[10px] font-mono px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md whitespace-nowrap">
+            Poké Mart
+          </div>
+        </button>
+
+        <button 
+          onClick={() => setIsInventoryOpen(true)}
+          className="relative group p-4 rounded-full hover:bg-white/10 transition-all duration-300 text-indigo-400 hover:scale-110 active:scale-95"
+        >
+          <Backpack className="w-6 h-6 drop-shadow-md" />
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 text-white text-[10px] font-mono px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md whitespace-nowrap">
+            Backpack ({user.inventory?.length || 0})
+          </div>
+        </button>
+
+        <div className="w-px h-8 bg-white/10 mx-1 rounded-full"></div>
+
+        <button 
+          onClick={() => setIsRosterOpen(true)}
+          className="relative group p-4 rounded-full hover:bg-white/10 transition-all duration-300 text-emerald-400 hover:scale-110 active:scale-95"
+        >
+          <svg className="w-6 h-6 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+            <path d="M2 12h8" />
+            <path d="M14 12h8" />
+          </svg>
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 text-white text-[10px] font-mono px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md whitespace-nowrap">
+            My Pokémon
+          </div>
+        </button>
+
+        {/* Profile Popup Menu (Centered over the entire dock) */}
+        {isProfileOpen && (
+          <>
+            {/* Invisible backdrop to close when clicking outside */}
+            <div className="fixed inset-0 z-40 cursor-default" onClick={() => setIsProfileOpen(false)} />
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 10, scale: 0.95, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+              exit={{ opacity: 0, y: 10, scale: 0.95, x: "-50%" }}
+              className="absolute bottom-[calc(100%+16px)] left-1/2 w-64 glass-panel rounded-3xl p-5 shadow-[0_20px_40px_rgba(0,0,0,0.5)] border border-white/10 z-50 flex flex-col items-center"
+            >
+              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white/10 shadow-inner mb-3">
+                {user.image ? (
+                  <img src={user.image} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-3xl">
+                    {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                  </div>
+                )}
+              </div>
+              
+              <h3 className="text-xl font-serif text-white tracking-tight text-center mb-1">{user.name || "Trainer"}</h3>
+              {user.email && <p className="text-xs text-zinc-400 font-sans text-center mb-4 truncate w-full px-2">{user.email}</p>}
+              
+              <div className="flex w-full gap-2 mb-5">
+                <div className="flex-1 bg-black/30 rounded-xl p-2 border border-white/5 flex flex-col items-center justify-center shadow-inner">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Karma</span>
+                  <span className="font-serif text-emerald-400">{user.karma || 0}</span>
+                </div>
+                <div className="flex-1 bg-black/30 rounded-xl p-2 border border-white/5 flex flex-col items-center justify-center shadow-inner">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Level</span>
+                  <span className="font-serif text-amber-400">{Math.floor((user.karma || 0)/100) + 1}</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="w-full skeumorphic-btn py-2.5 rounded-xl text-xs font-medium uppercase tracking-widest text-zinc-300 hover:text-white transition-all active:scale-95 flex items-center justify-center"
+              >
+                Sign Out
+              </button>
+            </motion.div>
+          </>
+        )}
       </motion.div>
 
       <TaskModal 
@@ -207,6 +340,21 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         onClose={() => setIsShopOpen(false)}
         userId={user.id}
         userCoins={user.coins}
+      />
+
+      <InventoryModal
+        isOpen={isInventoryOpen}
+        onClose={() => setIsInventoryOpen(false)}
+        userId={user.id}
+        inventory={user.inventory || []}
+      />
+
+      <PokemonRosterModal
+        isOpen={isRosterOpen}
+        onClose={() => setIsRosterOpen(false)}
+        userId={user.id}
+        pokemons={user.pokemons || []}
+        activePokemonId={user.activePokemonId}
       />
     </div>
   );
