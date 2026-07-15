@@ -21,23 +21,49 @@
 }
 
 :root {
-  --background: #09090b; 
-  --foreground: #fafafa;
+  --background: #000000;
+  --foreground: #ffffff;
   
-  --card: #18181b; 
-  --card-foreground: #fafafa;
+  --card: rgba(20, 20, 20, 0.4);
+  --card-foreground: #ffffff;
   
   --primary: #ffffff;
-  --primary-foreground: #09090b;
+  --primary-foreground: #000000;
   
-  --muted: #27272a;
+  --muted: rgba(255, 255, 255, 0.1);
   --muted-foreground: #a1a1aa;
   
-  --border: #27272a;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+@utility glass-panel {
+  background: rgba(255, 255, 255, 0.03); /* Lighter, more translucent base */
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.3), /* Soft ambient shadow instead of heavy drop */
+    inset 0.5px 0.5px 1px 0px rgba(255, 255, 255, 0.3), /* Top/Left specular highlight */
+    inset -0.5px -0.5px 1px 0px rgba(0, 0, 0, 0.2); /* Bottom/Right shadow */
+}
+
+@utility skeumorphic-btn {
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0.5px 0.5px 1px 0px rgba(255, 255, 255, 0.2), /* Specular edge */
+    inset -0.5px -0.5px 1px 0px rgba(0, 0, 0, 0.3); /* Under shadow */
+}
+
+@utility skeumorphic-btn-active {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    inset 1px 2px 4px rgba(0, 0, 0, 0.4),
+    inset -0.5px -0.5px 1px 0px rgba(255, 255, 255, 0.1); /* Inner bottom specular edge */
 }
 
 body {
-  background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
 }

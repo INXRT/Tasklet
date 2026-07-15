@@ -1,40 +1,39 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Sparkles, Flame, Wind, Feather, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Sparkles, ArrowRight, Leaf, Flame, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { selectCompanion } from "@/actions/user";
-import { Companion3D } from "@/components/ui/Companion3D";
+import { selectStarterPokemon } from "@/actions/user";
+import { Pokemon2D } from "@/components/ui/Pokemon2D";
 
-
-const COMPANIONS = [
+const STARTERS = [
   {
-    id: "DRAGON",
-    name: "Dragon",
+    id: "bulbasaur",
+    name: "Bulbasaur",
+    icon: Leaf,
+    tag: "GRASS/POISON",
+    description: "A steady and reliable companion. Perfect for building consistent, long-term habits.",
+    glow: "from-green-500/20 to-transparent",
+    border: "border-green-500/20",
+  },
+  {
+    id: "charmander",
+    name: "Charmander",
     icon: Flame,
-    tag: "SYS: AGGRESSIVE",
-    description: "Evolves with fiery intensity. Perfect for those who thrive under pressure.",
+    tag: "FIRE",
+    description: "Fierce and passionate. Ideal for those who tackle their tasks with intense bursts of energy.",
     glow: "from-orange-500/20 to-transparent",
     border: "border-orange-500/20",
   },
   {
-    id: "GRIFFIN",
-    name: "Griffin",
-    icon: Wind,
-    tag: "SYS: STEADY",
-    description: "Evolves with majestic pride. Ideal for steady, consistent high-achievers.",
-    glow: "from-blue-500/20 to-transparent",
-    border: "border-blue-500/20",
-  },
-  {
-    id: "PHOENIX",
-    name: "Phoenix",
-    icon: Feather,
-    tag: "SYS: RESILIENT",
-    description: "Evolves through cycles of rebirth. Great for bouncing back from procrastination.",
-    glow: "from-amber-500/20 to-transparent",
-    border: "border-amber-500/20",
+    id: "pichu",
+    name: "Pichu",
+    icon: Zap,
+    tag: "ELECTRIC",
+    description: "Quick and energetic. Great for users who want to speed through many small tasks quickly.",
+    glow: "from-yellow-500/20 to-transparent",
+    border: "border-yellow-500/20",
   },
 ];
 
@@ -48,7 +47,7 @@ export default function OnboardingPage() {
     
     startTransition(async () => {
       try {
-        const result = await selectCompanion(id as any);
+        const result = await selectStarterPokemon(id);
         if (result && result.error) {
           alert("Database Error: " + result.error);
           return;
@@ -62,82 +61,75 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white/20 overflow-hidden relative flex flex-col items-center justify-center p-6">
+    <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
       
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(99,102,241,0) 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
-      </div>
-
-      <div className="z-10 w-full max-w-6xl flex flex-col items-center">
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
-            <Sparkles className="w-4 h-4 text-zinc-400" />
-            <span className="text-xs font-mono tracking-widest uppercase text-zinc-300">Initialization Sequence</span>
+      {/* The Desktop Window */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} // iOS-like spring easing
+        className="glass-panel w-full max-w-6xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-[0_20px_80px_-20px_rgba(0,0,0,0.5)]"
+      >
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/20 border border-white/10 mb-6 shadow-inner">
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span className="text-[10px] font-mono tracking-widest uppercase text-white/70">OS Initialization</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-serif tracking-tight text-white mb-6 leading-tight">
-            Select Your <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40 italic">Companion Core</span>
+          <h1 className="text-4xl md:text-5xl font-serif tracking-tight text-white mb-4">
+            Select Your <span className="text-white/50 italic">Partner</span>
           </h1>
-          <p className="text-zinc-400 max-w-lg mx-auto font-sans font-light tracking-wide text-lg">
-            Choose the entity that aligns with your productivity style. 
-            It will grow as you conquer your schedule.
+          <p className="text-zinc-400 max-w-lg mx-auto font-sans text-sm tracking-wide">
+            Your environment will adapt to your workflow.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-          {COMPANIONS.map((companion, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+          {STARTERS.map((starter, idx) => (
             <motion.div
-              key={companion.id}
-              initial={{ opacity: 0, y: 30 }}
+              key={starter.id}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: idx * 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.6, delay: 0.1 + idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
-              onClick={() => handleSelect(companion.id)}
-              className={`relative group cursor-pointer rounded-[2.5rem] bg-white/[0.02] border transition-all duration-700 ease-out flex flex-col items-center p-4 overflow-hidden shadow-lg ${
-                hoveredIdx === idx ? companion.border : "border-white/5"
+              onClick={() => handleSelect(starter.id)}
+              className={`relative group cursor-pointer rounded-[2rem] bg-black/20 transition-all duration-500 ease-out flex flex-col items-center p-3 overflow-hidden shadow-inner border ${
+                hoveredIdx === idx ? starter.border : "border-white/5"
               } ${isPending ? "opacity-50 pointer-events-none cursor-wait" : ""}`}
             >
               <div 
-                className={`absolute inset-0 bg-gradient-to-t ${companion.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`}
+                className={`absolute inset-0 bg-gradient-to-t ${starter.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none mix-blend-screen`}
               />
               
-              <div className="w-full aspect-[4/3] rounded-[2rem] overflow-hidden relative mb-8 border border-white/5 bg-black/20 transition-colors duration-500 shadow-inner">
-                <Companion3D type={companion.id as any} />
+              <div className="w-full aspect-[4/3] rounded-[1.5rem] overflow-hidden relative mb-6 border border-white/5 bg-white/[0.02] transition-colors duration-500 flex items-center justify-center">
+                <Pokemon2D speciesId={starter.id} mood={hoveredIdx === idx ? "happy" : "idle"} />
               </div>
 
-              <div className="px-4 pb-4 relative z-10 w-full">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-3xl font-serif text-white tracking-tight">{companion.name}</h3>
-                  <div className={`p-2 rounded-full bg-white/5 text-white/50 group-hover:text-white group-hover:bg-white/10 transition-colors duration-500`}>
-                    <companion.icon className="w-5 h-5" />
+              <div className="px-3 pb-3 relative z-10 w-full flex flex-col">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-2xl font-serif text-white tracking-tight">{starter.name}</h3>
+                  <div className={`p-1.5 rounded-full bg-white/5 text-white/50 group-hover:text-white group-hover:bg-white/10 transition-colors duration-500`}>
+                    <starter.icon className="w-4 h-4" />
                   </div>
                 </div>
                 
-                <div className="inline-block px-2 py-1 rounded-sm bg-white/10 mb-3">
-                  <p className="text-[10px] font-mono tracking-widest text-zinc-300 uppercase">{companion.tag}</p>
+                <div className="inline-flex px-2 py-0.5 rounded border border-white/10 bg-white/5 mb-3 self-start">
+                  <p className="text-[9px] font-mono tracking-widest text-zinc-400 uppercase">{starter.tag}</p>
                 </div>
                 
-                <p className="text-zinc-400 text-sm leading-relaxed font-light mb-8 h-12">
-                  {companion.description}
+                <p className="text-zinc-500 text-xs leading-relaxed font-light mb-6 h-10">
+                  {starter.description}
                 </p>
 
-                <div className="flex items-center gap-2 text-xs font-mono tracking-widest text-zinc-500 uppercase group-hover:text-white transition-colors duration-500">
-                  <span>Initialize</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-500" />
-                </div>
+                <button className="w-full skeumorphic-btn py-2.5 rounded-xl text-xs font-medium uppercase tracking-widest text-zinc-300 group-hover:text-white group-hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+                  <span>Deploy</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -3,7 +3,6 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -14,12 +13,30 @@ datasource db {
 model User {
   id                String    @id @default(cuid())
   coins             Int       @default(0)
-  karma             Int       @default(0) // Determines evolution/level
-  selectedCompanion String?   // "DRAGON", "GRIFFIN", "PHOENIX"
+  karma             Int       @default(0)
+  streak            Int       @default(0)
+  lastActiveDate    String?
+  activePokemonId   String?
+  
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  
   tasks             Task[]
   inventory         UserItem[]
+  pokemons          UserPokemon[]
+}
+
+model UserPokemon {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  pokemonId   String   // The base species (e.g., "bulbasaur")
+  xp          Int      @default(0)
+  mood        String   @default("happy")
+  isShiny     Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
 }
 
 model Task {
@@ -27,7 +44,6 @@ model Task {
   title        String
   description  String?
   
-  // Custom logic
   isCompleted  Boolean   @default(false)
   dueDate      DateTime
   duration     Int       @default(60)
@@ -45,7 +61,7 @@ model ShopItem {
   name          String
   description   String?
   price         Int
-  companionType String?   // If the item is specific to a companion
+  type          String    // "food", "gacha"
   imageUrl      String?
   userItems     UserItem[]
 }
@@ -56,7 +72,7 @@ model UserItem {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   shopItemId String
   shopItem   ShopItem @relation(fields: [shopItemId], references: [id], onDelete: Cascade)
-  isEquipped Boolean  @default(false)
+  quantity   Int      @default(1)
   
   @@unique([userId, shopItemId])
 }

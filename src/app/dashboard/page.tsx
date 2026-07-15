@@ -2,6 +2,7 @@ import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "./DashboardClient";
 
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   const prisma = getPrisma();
@@ -9,17 +10,25 @@ export default async function DashboardPage() {
     include: {
       tasks: {
         orderBy: { dueDate: "asc" }
-      }
+      },
+      pokemons: true
     }
   });
   
-  if (!user || !user.selectedCompanion) {
+  if (!user || !user.activePokemonId) {
+    redirect("/onboarding");
+  }
+
+  const activePokemon = user.pokemons.find(p => p.id === user.activePokemonId);
+
+  if (!activePokemon) {
     redirect("/onboarding");
   }
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-8 z-10 relative">
-      <DashboardClient user={user} />
+    <div className="w-full h-full flex flex-col z-10 relative overflow-hidden">
+      <DashboardClient user={user} activePokemon={activePokemon} />
     </div>
   );
 }
+

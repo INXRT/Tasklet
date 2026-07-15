@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
-import { AmbientBackground } from "@/components/ui/AmbientBackground";
+import { MediaBackground } from "@/components/ui/MediaBackground";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Familiar | Time Manager",
+  title: "Sidekick | Pokémon Manager",
   description: "A gamified productivity companion.",
 };
 
@@ -32,12 +32,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${instrument.variable} ${mono.variable} h-full antialiased dark`}
+      className={`${inter.variable} ${instrument.variable} ${mono.variable} antialiased dark`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-transparent text-foreground overflow-x-hidden selection:bg-white/20">
-        <AmbientBackground />
-        <div className="relative z-10 flex flex-col min-h-screen p-4 md:p-8">
-          {children}
+      <body className="h-screen w-screen overflow-hidden font-sans text-foreground selection:bg-white/20 flex flex-col">
+        <MediaBackground />
+        
+        {/* The Desktop environment container */}
+        <div className="relative z-10 flex-1 w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 xl:p-16">
+          <div className="w-full max-w-7xl h-full flex flex-col">
+            {children}
+          </div>
         </div>
       </body>
     </html>
