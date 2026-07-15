@@ -4,6 +4,48 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Clock, Target, BrainCircuit } from "lucide-react";
 
+import { useState, useEffect } from "react";
+
+const WORDS = ["tasks.", "goals.", "missions."];
+
+function TypewriterEffect() {
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [blink, setBlink] = useState(true);
+
+  useEffect(() => {
+    const timeout = setInterval(() => setBlink((prev) => !prev), 500);
+    return () => clearInterval(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (subIndex === WORDS[index].length && !isDeleting) {
+      const timeout = setTimeout(() => setIsDeleting(true), 2000); // 2 second pause
+      return () => clearTimeout(timeout);
+    }
+
+    if (subIndex === 0 && isDeleting) {
+      setIsDeleting(false);
+      setIndex((prev) => (prev + 1) % WORDS.length);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSubIndex((prev) => prev + (isDeleting ? -1 : 1));
+    }, isDeleting ? 40 : 120); // Faster delete, natural typing speed
+
+    return () => clearTimeout(timeout);
+  }, [subIndex, index, isDeleting]);
+
+  return (
+    <span className="text-zinc-300 italic font-serif drop-shadow-[0_2px_12px_rgba(0,0,0,1)]">
+      {WORDS[index].substring(0, subIndex)}
+      <span className={blink ? "opacity-100 transition-opacity" : "opacity-0 transition-opacity"}>|</span>
+    </span>
+  );
+}
+
 export default function Home() {
   return (
     <div className="flex-1 flex flex-col justify-center items-center p-4 md:p-8 z-10 relative min-h-[90vh]">
@@ -29,7 +71,7 @@ export default function Home() {
             
             <h1 className="text-7xl md:text-[9rem] font-normal tracking-tighter mb-4 text-white leading-[0.85] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
               Gamify <br/>
-              <span className="text-zinc-300 italic font-serif drop-shadow-[0_2px_12px_rgba(0,0,0,1)]">existence.</span>
+              <TypewriterEffect />
             </h1>
           </div>
           

@@ -19,6 +19,8 @@ const mono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
+
 export const metadata: Metadata = {
   title: "Sidekick | Pokémon Manager",
   description: "A gamified productivity companion.",
@@ -38,11 +40,11 @@ export default function RootLayout({
         <MediaBackground />
         
         {/* The Desktop environment container */}
-        <div className="relative z-10 flex-1 w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 xl:p-16">
-          <div className="w-full max-w-7xl h-full flex flex-col">
+        <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
+          <div className="w-full h-full flex flex-col">
             {children}
           </div>
-        </div>
+        </ScaleWrapper>
       </body>
     </html>
   );
