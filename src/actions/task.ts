@@ -3,7 +3,7 @@
 import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function createTask(userId: string, title: string, dueDate: Date, durationMinutes: number = 60) {
   const session = await getServerSession(authOptions);
