@@ -67,7 +67,7 @@ export default function OnboardingPage() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.98, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} // iOS-like spring easing
+        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
         className="glass-panel w-full max-w-6xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-[0_20px_80px_-20px_rgba(0,0,0,0.5)]"
       >
         <div className="text-center mb-12">
@@ -89,7 +89,7 @@ export default function OnboardingPage() {
               key={starter.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 + idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.1 + idx * 0.1 }}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
               onClick={() => handleSelect(starter.id)}

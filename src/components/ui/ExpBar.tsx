@@ -26,7 +26,7 @@ export function ExpBar({ xp }: ExpBarProps) {
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.5 }}
           className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300 rounded-full relative shadow-[0_0_10px_rgba(52,211,153,0.5)]"
         >
           <div className="absolute inset-0 bg-white/20 w-full h-1/2 rounded-t-full" />

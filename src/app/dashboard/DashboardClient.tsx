@@ -35,7 +35,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
           className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[480px]"
         >
           <div className="flex justify-between w-full mb-4 z-10">
@@ -81,7 +81,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.1 }}
           className="rounded-[2rem] glass-panel p-8 relative flex-1"
         >
           <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-6 uppercase">Activity Metrics</h3>
@@ -106,7 +106,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.15 }}
         className="lg:col-span-8 rounded-[2rem] glass-panel p-8 relative flex flex-col"
       >
         {/* Header */}

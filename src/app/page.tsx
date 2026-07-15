@@ -13,8 +13,8 @@ export default function Home() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="md:col-span-8 md:row-span-2 rounded-[2.5rem] bg-white/[0.02] border border-white/10 p-10 md:p-16 flex flex-col justify-between relative overflow-hidden group shadow-lg"
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+          className="md:col-span-8 md:row-span-2 rounded-[2.5rem] glass-panel p-10 md:p-16 flex flex-col justify-between relative overflow-hidden group shadow-lg"
         >
           {/* Card Noise Overlay */}
           <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
@@ -27,9 +27,9 @@ export default function Home() {
               <span>System Initialization / Productivity</span>
             </div>
             
-            <h1 className="text-7xl md:text-[9rem] font-normal tracking-tighter mb-4 text-white leading-[0.85]">
+            <h1 className="text-7xl md:text-[9rem] font-normal tracking-tighter mb-4 text-white leading-[0.85] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
               Gamify <br/>
-              <span className="text-zinc-600 italic font-serif">existence.</span>
+              <span className="text-zinc-300 italic font-serif drop-shadow-[0_2px_12px_rgba(0,0,0,1)]">existence.</span>
             </h1>
           </div>
           
@@ -54,8 +54,8 @@ export default function Home() {
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="md:col-span-4 md:row-span-1 rounded-[2.5rem] bg-white/[0.02] border border-white/10 p-10 flex flex-col justify-between relative overflow-hidden group"
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.1 }}
+          className="md:col-span-4 md:row-span-1 rounded-[2.5rem] glass-panel p-10 flex flex-col justify-between relative overflow-hidden group"
         >
           <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -71,8 +71,8 @@ export default function Home() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] bg-white/[0.02] border border-white/10 p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.15 }}
+          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] glass-panel p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
         >
           <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
           <Target className="w-12 h-12 text-zinc-400 mb-6 group-hover:scale-110 transition-transform duration-700 ease-out" />
@@ -83,8 +83,8 @@ export default function Home() {
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] bg-white/[0.02] border border-white/10 p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.2 }}
+          className="md:col-span-2 md:row-span-1 rounded-[2.5rem] glass-panel p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group"
         >
           <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
           <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
