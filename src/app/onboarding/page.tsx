@@ -49,9 +49,14 @@ export default function OnboardingPage() {
     
     startTransition(async () => {
       try {
-        await selectCompanion(id as any);
+        const result = await selectCompanion(id as any);
+        if (result && result.error) {
+          alert("Database Error: " + result.error);
+          return;
+        }
         router.push("/dashboard");
       } catch (error) {
+        alert("Unexpected error: " + String(error));
         console.error("Selection failed:", error);
       }
     });

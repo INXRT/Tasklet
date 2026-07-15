@@ -4,25 +4,26 @@ import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 export async function selectCompanion(companionType: string) {
-  const prisma = getPrisma();
-  // For the hackathon, we'll create a single "dummy" user session
-  // In a real app, this would use NextAuth or Clerk
-  
-  // Try to find the existing demo user, or create one
-  let user = await prisma.user.findFirst();
-  
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        selectedCompanion: companionType,
-      },
-    });
-  } else {
-    user = await prisma.user.update({
-      where: { id: user.id },
-      data: { selectedCompanion: companionType },
-    });
-  }
+  try {
+    const prisma = getPrisma();
+    let user = await prisma.user.findFirst();
+    
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          selectedCompanion: companionType,
+        },
+      });
+    } else {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { selectedCompanion: companionType },
+      });
+    }
 
-  return { success: true };
+    return { success: true };
+  } catch (error: any) {
+    console.error("Server Action Error:", error);
+    return { success: false, error: error.message || String(error) };
+  }
 }
