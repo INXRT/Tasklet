@@ -24,6 +24,5 @@ export async function selectCompanion(companionType: string) {
     });
   }
 
-  // Redirect to the main dashboard after selection
-  redirect("/dashboard");
+  return { success: true };
 }

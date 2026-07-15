@@ -28,7 +28,7 @@ export function DashboardClient({ user }: { user: any }) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="rounded-[2rem] bg-white/[0.02] border border-white/[0.05] backdrop-blur-2xl p-6 relative overflow-hidden flex flex-col items-center shadow-2xl h-[450px]"
+          className="rounded-[2rem] bg-white/[0.02] border border-white/[0.05] p-6 relative overflow-hidden flex flex-col items-center shadow-lg h-[450px]"
         >
           <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
           
@@ -60,7 +60,7 @@ export function DashboardClient({ user }: { user: any }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="rounded-[2rem] bg-white/[0.02] border border-white/[0.05] backdrop-blur-2xl p-8 relative overflow-hidden shadow-2xl flex-1"
+          className="rounded-[2rem] bg-white/[0.02] border border-white/[0.05] p-8 relative overflow-hidden shadow-lg flex-1"
         >
           <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
           
@@ -87,7 +87,7 @@ export function DashboardClient({ user }: { user: any }) {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-        className="lg:col-span-8 rounded-[2rem] bg-white/[0.02] border border-white/[0.05] backdrop-blur-2xl p-8 relative overflow-hidden shadow-2xl flex flex-col"
+        className="lg:col-span-8 rounded-[2rem] bg-white/[0.02] border border-white/[0.05] p-8 relative overflow-hidden shadow-lg flex flex-col"
       >
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
         

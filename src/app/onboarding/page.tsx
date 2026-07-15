@@ -60,10 +60,9 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/20 overflow-hidden relative flex flex-col items-center justify-center p-6">
       
-      {/* Background Ambience */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-white/5 blur-[120px] rounded-full mix-blend-screen pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-500/5 blur-[100px] rounded-full mix-blend-screen pointer-events-none" />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full mix-blend-screen pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full mix-blend-screen pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(99,102,241,0) 70%)' }} />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
       </div>
 
@@ -98,7 +97,7 @@ export default function OnboardingPage() {
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
               onClick={() => handleSelect(companion.id)}
-              className={`relative group cursor-pointer rounded-[2.5rem] bg-white/[0.02] border transition-all duration-700 ease-out flex flex-col items-center p-4 overflow-hidden backdrop-blur-3xl shadow-2xl ${
+              className={`relative group cursor-pointer rounded-[2.5rem] bg-white/[0.02] border transition-all duration-700 ease-out flex flex-col items-center p-4 overflow-hidden shadow-lg backdrop-blur-md ${
                 hoveredIdx === idx ? companion.border : "border-white/5"
               } ${isPending ? "opacity-50 pointer-events-none cursor-wait" : ""}`}
             >
