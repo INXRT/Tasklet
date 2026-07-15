@@ -5,6 +5,7 @@ import { useState, useEffect, useTransition } from "react";
 import { consumeItem } from "@/actions/shop";
 import { createPortal } from "react-dom";
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
+import { X, Backpack } from "lucide-react";
 
 interface InventoryModalProps {
   isOpen: boolean;
