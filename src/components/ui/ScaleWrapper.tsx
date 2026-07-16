@@ -88,21 +88,22 @@ export function ScaleWrapper({
 
   return (
     <div 
-      className={`flex w-full items-center justify-center relative ${isMobile ? '' : 'h-full overflow-hidden'}`}
-      style={{ minHeight: isMobile ? mobileHeight : '100dvh' }}
+      className={`flex w-full relative ${isMobile ? 'h-[100dvh] overflow-y-auto overflow-x-hidden justify-center items-start' : 'h-full overflow-hidden items-center justify-center'}`}
     >
-      <div 
-        ref={containerRef}
-        style={{ 
-          width: isMobile ? targetMobileWidth : targetWidth,
-          height: isMobile ? 'auto' : targetHeight,
-          minHeight: isMobile ? '100dvh' : targetHeight,
-          transform: `scale(${scale})`,
-          transformOrigin: isMobile ? 'top center' : 'center center'
-        }}
-        className={`relative ${isMobile ? 'origin-top' : 'origin-center overflow-hidden max-w-[100vw]'} overflow-x-hidden`}
-      >
-        {children}
+      <div style={{ height: isMobile ? mobileHeight : '100%', width: '100%', display: 'flex', justifyContent: 'center', minHeight: isMobile ? 'auto' : '100dvh' }}>
+        <div 
+          ref={containerRef}
+          style={{ 
+            width: isMobile ? targetMobileWidth : targetWidth,
+            height: isMobile ? 'auto' : targetHeight,
+            minHeight: isMobile ? '100dvh' : targetHeight,
+            transform: `scale(${scale})`,
+            transformOrigin: isMobile ? 'top center' : 'center center'
+          }}
+          className={`relative ${isMobile ? 'origin-top' : 'origin-center overflow-hidden max-w-[100vw]'} overflow-x-hidden`}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
