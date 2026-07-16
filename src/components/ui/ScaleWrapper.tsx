@@ -13,62 +13,97 @@ export function ScaleWrapper({
   children, 
   targetWidth = 1280, 
   targetHeight = 800,
-  padding = 32 // Margin in pixels around the box
+  padding = 32
 }: ScaleWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileHeight, setMobileHeight] = useState('auto');
+  
+  const targetMobileWidth = 390;
 
   useEffect(() => {
+    let currentScale = 1;
+    let currentIsMobile = false;
+    
     const handleResize = () => {
       if (typeof window === "undefined") return;
       
       const isMobileScreen = window.innerWidth < 1024 || window.innerHeight > window.innerWidth;
       setIsMobile(isMobileScreen);
+      currentIsMobile = isMobileScreen;
 
       if (isMobileScreen) {
-        setScale(1);
-        return;
+        // Calculate smart scaling for mobile based on standard 390px width
+        const scaleX = window.innerWidth / targetMobileWidth;
+        // Don't scale up too massively on tablets that pass as mobile, cap it reasonably
+        currentScale = Math.min(scaleX, 1.5);
+        setScale(currentScale);
+      } else {
+        const availableWidth = window.innerWidth - (padding * 2);
+        const availableHeight = window.innerHeight - (padding * 2);
+        
+        const scaleX = availableWidth / targetWidth;
+        const scaleY = availableHeight / targetHeight;
+        
+        currentScale = Math.min(scaleX, scaleY, 1); 
+        setScale(currentScale);
       }
-
-      const availableWidth = window.innerWidth - (padding * 2);
-      const availableHeight = window.innerHeight - (padding * 2);
       
-      // Calculate how much we need to scale to fit both width and height
-      const scaleX = availableWidth / targetWidth;
-      const scaleY = availableHeight / targetHeight;
-      
-      // Use the smaller scale to ensure it fits entirely on screen without cutting edges
-      const finalScale = Math.min(scaleX, scaleY, 1); // Don't scale up past 1x if on a huge monitor
-      
-      setScale(finalScale);
+      updateMobileHeight();
     };
 
-    // Initial calculation
+    const updateMobileHeight = () => {
+      if (currentIsMobile && containerRef.current) {
+        // Multiply actual DOM height by scale to get visual height, so scrolling works perfectly
+        const rect = containerRef.current.getBoundingClientRect();
+        // getBoundingClientRect().height already returns the scaled height if transform is applied!
+        // Wait, if transform is applied, rect.height IS the scaled height.
+        // We can just set the parent div's minHeight to rect.height.
+        // But since we use React state, it might loop if we're not careful.
+        // Actually, scrollHeight gives the unscaled height.
+        const unscaledHeight = containerRef.current.scrollHeight;
+        setMobileHeight(`${unscaledHeight * currentScale}px`);
+      }
+    };
+
     handleResize();
     
-    // Listen for resizes
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    
+    // Use ResizeObserver to detect content changes (like opening accordions) that change height
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      observer = new ResizeObserver(() => {
+        updateMobileHeight();
+      });
+      observer.observe(containerRef.current);
+    }
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (observer) observer.disconnect();
+    };
   }, [targetWidth, targetHeight, padding]);
 
   return (
-    <div className={`flex w-full items-center justify-center relative ${isMobile ? 'min-h-[100dvh]' : 'h-full overflow-hidden'}`}>
+    <div 
+      className={`flex w-full items-center justify-center relative ${isMobile ? '' : 'h-full overflow-hidden'}`}
+      style={{ minHeight: isMobile ? mobileHeight : '100dvh' }}
+    >
       <div 
         ref={containerRef}
         style={{ 
-          width: isMobile ? '100%' : targetWidth,
+          width: isMobile ? targetMobileWidth : targetWidth,
           height: isMobile ? 'auto' : targetHeight,
           minHeight: isMobile ? '100dvh' : targetHeight,
-          transform: isMobile ? 'none' : `scale(${scale})`,
-          transformOrigin: 'center center'
+          transform: `scale(${scale})`,
+          transformOrigin: isMobile ? 'top center' : 'center center'
         }}
-        className={`relative transition-transform duration-100 ease-out ${isMobile ? '' : 'origin-center overflow-hidden'} max-w-[100vw] overflow-x-hidden`}
+        className={`relative ${isMobile ? 'origin-top' : 'origin-center overflow-hidden max-w-[100vw]'} overflow-x-hidden`}
       >
         {children}
       </div>
     </div>
   );
 }
-
-
