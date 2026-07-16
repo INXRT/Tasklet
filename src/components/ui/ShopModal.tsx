@@ -116,7 +116,7 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {items.length === 0 ? (
                 <div className="col-span-2 text-center py-8 text-zinc-500">Loading items...</div>
               ) : (

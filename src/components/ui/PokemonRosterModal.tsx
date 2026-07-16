@@ -53,7 +53,7 @@ export function PokemonRosterModal({ isOpen, onClose, userId, pokemons, activePo
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                  className="relative w-full max-w-4xl glass-panel rounded-[2rem] p-8 shadow-2xl overflow-hidden pointer-events-auto flex flex-col max-h-[90vh]"
+                  className="relative w-full max-w-4xl glass-panel rounded-[2rem] p-8 shadow-2xl overflow-hidden pointer-events-auto flex flex-col max-h-[650px]"
                   onClick={e => e.stopPropagation()}
                 >
                   <button 
