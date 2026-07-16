@@ -1,6 +1,6 @@
 import { getPrisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { DashboardClient } from "./DashboardClient";
+import { DashboardWrapper } from "./DashboardWrapper";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -39,8 +39,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="w-full h-full flex flex-col z-10 relative overflow-hidden">
-      <DashboardClient user={user} activePokemon={activePokemon} />
+      <DashboardWrapper user={user} activePokemon={activePokemon} />
     </div>
   );
 }
+
 

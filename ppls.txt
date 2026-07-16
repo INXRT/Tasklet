@@ -1,9 +1,11 @@
+==== src/app/dashboard/MobileDashboardClient.tsx ====
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useOptimistic, useTransition } from "react";
 import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store, Backpack, Settings, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { format, addDays, subDays, isSameDay } from "date-fns";
+import { MobileDrawer } from "@/components/ui/MobileDrawer";
 import { TaskModal } from "@/components/ui/TaskModal";
 import { CalendarView } from "@/components/ui/CalendarView";
 import { toggleTaskCompletion, deleteTask } from "@/actions/task";
@@ -25,7 +27,18 @@ const containerVariants: any = {
   exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -50 : 50, transition: { duration: 0.2, ease: "easeIn" } })
 };
 
-export function DashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
+const PokeballIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="45" fill="white" stroke="#333" strokeWidth="5"/>
+    <path d="M5 50 A 45 45 0 0 1 95 50 Z" fill="#ef4444" stroke="#333" strokeWidth="5"/>
+    <circle cx="50" cy="50" r="15" fill="white" stroke="#333" strokeWidth="5"/>
+    <circle cx="50" cy="50" r="6" fill="#333"/>
+    <line x1="5" y1="50" x2="35" y2="50" stroke="#333" strokeWidth="5"/>
+    <line x1="65" y1="50" x2="95" y2="50" stroke="#333" strokeWidth="5"/>
+  </svg>
+);
+
+export function MobileDashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
   const [view, setView] = useState<"calendar" | "list">("list");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<any>(null);
@@ -33,6 +46,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isRosterOpen, setIsRosterOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileTrainerOpen, setIsMobileTrainerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -104,19 +118,15 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
 
   const todaysTasks = optimisticTasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate));
 
-  return (
-    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-      
-      {/* Sidebar: Stats & Companion */}
-      <div className="lg:col-span-4 flex flex-col gap-8">
-        
-        {/* Companion Viewer */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[420px]"
-        >
+  const leftSidebarContent = (
+    <>
+      {/* Companion Viewer */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+        className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[420px]"
+      >
           <div className="flex justify-start w-full mb-4 z-10">
             <MoodIndicator mood={activePokemon.mood} />
           </div>
@@ -167,7 +177,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.1 }}
           className="rounded-[2rem] glass-panel p-6 relative"
         >
           <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-6 uppercase">Activity Metrics</h3>
@@ -186,34 +196,39 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
             </div>
           </div>
         </motion.div>
+    </>
+  );
 
-        {/* Scratchpad Widget */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-          className="rounded-[2rem] glass-panel p-5 relative flex-1 flex flex-col min-h-[120px]"
-        >
-          <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-3 uppercase">Quick Scratchpad</h3>
-          <textarea 
-            className="w-full flex-1 bg-transparent border-none outline-none resize-none text-zinc-300 placeholder:text-zinc-600 font-sans text-sm custom-scrollbar"
-            placeholder="Jot down quick thoughts here..."
-            defaultValue=""
-          />
-        </motion.div>
+  return (
+    <div className="w-full min-h-[100dvh] lg:h-full lg:min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-3 pb-32 sm:pb-36 lg:p-0">
+      
+      {/* Sidebar: Stats & Companion (Hidden on Mobile) */}
+      <div className="hidden lg:flex lg:col-span-4 flex-col gap-8">
+        {leftSidebarContent}
       </div>
 
       {/* Main Area: Calendar/Tasks */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
-        className="lg:col-span-8 rounded-[2rem] glass-panel p-6 relative flex flex-col"
+        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.15 }}
+        className="lg:col-span-8 rounded-[2rem] glass-panel p-4 sm:p-6 relative flex flex-col overflow-hidden"
       >
+        {/* Mobile Background Flair */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none lg:hidden" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none lg:hidden" />
+
         {/* Header */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 relative z-10 border-b border-white/10 pb-6 gap-6">
-          <div className="flex flex-wrap items-center gap-6">
-            <h1 className="text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <button 
+              onClick={() => setIsMobileTrainerOpen(true)}
+              className="lg:hidden p-2 sm:p-3 rounded-full glass-panel hover:bg-white/10 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)] border border-white/10 flex items-center justify-center group relative overflow-hidden active:scale-95"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <PokeballIcon className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md" />
+            </button>
+            <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
             
             {/* Daily Progress & Streak Ring */}
             <DailyProgressRing 
@@ -231,6 +246,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                   const isSelected = i === 2; // the center one is always selectedDate
                   return (
                     <motion.button
+                      layout
                       initial={{ opacity: 0, scale: 0.8, x: 20 }}
                       animate={{ opacity: 1, scale: isSelected ? 1.1 : 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.8, x: -20 }}
@@ -282,7 +298,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 relative z-10 overflow-y-auto px-4 custom-scrollbar pb-24 overflow-x-hidden -mx-4">
+        <div className="flex-1 relative z-10 lg:overflow-y-auto px-4 lg:custom-scrollbar pb-24 overflow-x-hidden -mx-4">
           {view === "list" ? (
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div 
@@ -391,14 +407,24 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
             </div>
           )}
         </div>
+
+        {/* Scratchpad Widget (Moved to Main Area) */}
+        <div className="rounded-2xl glass-panel p-5 mt-6 relative flex flex-col min-h-[120px] shrink-0 border border-white/10 shadow-inner bg-black/20">
+          <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-3 uppercase">Quick Scratchpad</h3>
+          <textarea 
+            className="w-full flex-1 bg-transparent border-none outline-none resize-none text-zinc-300 placeholder:text-zinc-600 font-sans text-sm custom-scrollbar"
+            placeholder="Jot down quick thoughts here..."
+            defaultValue=""
+          />
+        </div>
       </motion.div>
 
       {/* MacOS Style Glass Dock */}
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-3 glass-panel rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10"
+        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5, delay: 0.3 }}
+        className="flex fixed lg:absolute bottom-6 left-1/2 -translate-x-1/2 z-50 items-center gap-1 sm:gap-2 p-2 sm:p-3 glass-panel rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10 bg-black/60 backdrop-blur-xl"
       >
         <div className="relative">
           <button 
@@ -515,27 +541,278 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         initialData={taskToEdit}
       />
 
-      <ShopModal
-        isOpen={isShopOpen}
-        onClose={() => setIsShopOpen(false)}
-        userId={user.id}
-        userCoins={user.coins}
-      />
-
-      <InventoryModal
-        isOpen={isInventoryOpen}
-        onClose={() => setIsInventoryOpen(false)}
-        userId={user.id}
-        inventory={user.inventory || []}
-      />
-
-      <PokemonRosterModal
-        isOpen={isRosterOpen}
-        onClose={() => setIsRosterOpen(false)}
+      <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} userId={user.id} userCoins={user.coins} />
+      <InventoryModal isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} userId={user.id} inventory={user.inventory || []} />
+      <PokemonRosterModal 
+        isOpen={isRosterOpen} 
+        onClose={() => setIsRosterOpen(false)} 
         userId={user.id}
         pokemons={user.pokemons || []}
         activePokemonId={user.activePokemonId}
       />
+
+      {/* Mobile Drawers */}
+      <MobileDrawer 
+        isOpen={isMobileTrainerOpen} 
+        onClose={() => setIsMobileTrainerOpen(false)} 
+        direction="left"
+        title="Trainer Info"
+      >
+        {leftSidebarContent}
+      </MobileDrawer>
     </div>
   );
 }
+
+
+==== src/app/dashboard/DashboardWrapper.tsx ====
+"use client";
+
+import { useState, useEffect } from "react";
+import { DashboardClient } from "./DashboardClient";
+import { MobileDashboardClient } from "./MobileDashboardClient";
+
+export function DashboardWrapper({ user, activePokemon }: { user: any; activePokemon: any }) {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024 || window.innerHeight > window.innerWidth);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Listen for resizes
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // During SSR, we render null to prevent hydration mismatches
+  if (isMobile === null) {
+    return <div className="w-full h-full bg-black"></div>; // Simple fallback while measuring
+  }
+
+  if (isMobile) {
+    return <MobileDashboardClient user={user} activePokemon={activePokemon} />;
+  }
+
+  return <DashboardClient user={user} activePokemon={activePokemon} />;
+}
+
+
+==== src/components/ui/MobileDrawer.tsx ====
+"use client";
+
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+
+interface MobileDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  direction?: "left" | "right";
+  children: React.ReactNode;
+  title?: string;
+}
+
+export function MobileDrawer({ isOpen, onClose, direction = "left", children, title }: MobileDrawerProps) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent scrolling on body when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const xOffset = direction === "left" ? "-100%" : "100%";
+
+  const drawerContent = (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] lg:hidden"
+            onClick={onClose}
+          />
+          
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: xOffset }}
+            animate={{ x: 0 }}
+            exit={{ x: xOffset }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className={`fixed top-0 bottom-0 ${direction === "left" ? "left-0" : "right-0"} w-[85vw] max-w-[400px] z-[101] glass-panel bg-black/90 flex flex-col shadow-2xl lg:hidden border-white/10`}
+            style={{ 
+              borderLeft: direction === "right" ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              borderRight: direction === "left" ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              borderTop: 'none',
+              borderBottom: 'none',
+              borderRadius: 0
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0 bg-white/5">
+              <h2 className="text-xl font-serif text-white">{title || "Menu"}</h2>
+              <button 
+                onClick={onClose}
+                className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content Area */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-6">
+              {children}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+
+  if (!mounted || typeof document === "undefined") return null;
+  return createPortal(drawerContent, document.body);
+}
+
+
+==== src/components/ui/ScaleWrapper.tsx ====
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
+
+interface ScaleWrapperProps {
+  children: React.ReactNode;
+  targetWidth?: number;
+  targetHeight?: number;
+  padding?: number;
+}
+
+export function ScaleWrapper({ 
+  children, 
+  targetWidth = 1280, 
+  targetHeight = 800,
+  padding = 32 // Margin in pixels around the box
+}: ScaleWrapperProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      
+      const isMobileScreen = window.innerWidth < 1024 || window.innerHeight > window.innerWidth;
+      setIsMobile(isMobileScreen);
+
+      if (isMobileScreen) {
+        setScale(1);
+        return;
+      }
+
+      const availableWidth = window.innerWidth - (padding * 2);
+      const availableHeight = window.innerHeight - (padding * 2);
+      
+      // Calculate how much we need to scale to fit both width and height
+      const scaleX = availableWidth / targetWidth;
+      const scaleY = availableHeight / targetHeight;
+      
+      // Use the smaller scale to ensure it fits entirely on screen without cutting edges
+      const finalScale = Math.min(scaleX, scaleY, 1); // Don't scale up past 1x if on a huge monitor
+      
+      setScale(finalScale);
+    };
+
+    // Initial calculation
+    handleResize();
+    
+    // Listen for resizes
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [targetWidth, targetHeight, padding]);
+
+  return (
+    <div className={`flex w-full items-center justify-center relative ${isMobile ? 'min-h-[100dvh]' : 'h-full overflow-hidden'}`}>
+      <div 
+        ref={containerRef}
+        style={{ 
+          width: isMobile ? '100%' : targetWidth,
+          height: isMobile ? 'auto' : targetHeight,
+          minHeight: isMobile ? '100dvh' : targetHeight,
+          transform: isMobile ? 'none' : `scale(${scale})`,
+          transformOrigin: 'center center'
+        }}
+        className={`relative transition-transform duration-100 ease-out ${isMobile ? '' : 'origin-center'} max-w-[100vw] overflow-x-hidden`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+
+==== src/app/dashboard/page.tsx ====
+import { getPrisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { DashboardWrapper } from "./DashboardWrapper";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+
+export const dynamic = 'force-dynamic';
+
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const prisma = getPrisma();
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      tasks: {
+        orderBy: { dueDate: "asc" }
+      },
+      pokemons: true,
+      inventory: {
+        include: { shopItem: true }
+      }
+    }
+  });
+  
+  if (!user || !user.activePokemonId) {
+    redirect("/onboarding");
+  }
+
+  const activePokemon = user.pokemons.find(p => p.id === user.activePokemonId);
+
+  if (!activePokemon) {
+    redirect("/onboarding");
+  }
+
+  return (
+    <div className="w-full h-full flex flex-col z-10 relative overflow-hidden">
+      <DashboardWrapper user={user} activePokemon={activePokemon} />
+    </div>
+  );
+}
+
+

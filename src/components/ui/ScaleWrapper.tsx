@@ -17,11 +17,20 @@ export function ScaleWrapper({
 }: ScaleWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       if (typeof window === "undefined") return;
       
+      const isMobileScreen = window.innerWidth < 1024 || window.innerHeight > window.innerWidth;
+      setIsMobile(isMobileScreen);
+
+      if (isMobileScreen) {
+        setScale(1);
+        return;
+      }
+
       const availableWidth = window.innerWidth - (padding * 2);
       const availableHeight = window.innerHeight - (padding * 2);
       
@@ -44,20 +53,22 @@ export function ScaleWrapper({
   }, [targetWidth, targetHeight, padding]);
 
   return (
-    <div className="flex w-full h-full items-center justify-center overflow-hidden relative">
+    <div className={`flex w-full items-center justify-center relative ${isMobile ? 'min-h-[100dvh]' : 'h-full overflow-hidden'}`}>
       <div 
         ref={containerRef}
         style={{ 
-          width: targetWidth, 
-          height: targetHeight,
-          transform: `scale(${scale})`,
-          transformOrigin: "center center",
-          transition: "transform 0.1s ease-out"
+          width: isMobile ? '100%' : targetWidth,
+          height: isMobile ? 'auto' : targetHeight,
+          minHeight: isMobile ? '100dvh' : targetHeight,
+          transform: isMobile ? 'none' : `scale(${scale})`,
+          transformOrigin: 'center center'
         }}
-        className="flex flex-col relative z-10 shrink-0"
+        className={`relative transition-transform duration-100 ease-out ${isMobile ? '' : 'origin-center overflow-hidden'} max-w-[100vw] overflow-x-hidden`}
       >
         {children}
       </div>
     </div>
   );
 }
+
+

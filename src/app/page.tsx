@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getPrisma } from "@/lib/prisma";
-import HomeClient from "./HomeClient";
+import HomeWrapper from "./HomeWrapper";
 
 export const dynamic = 'force-dynamic';
 
@@ -40,5 +40,5 @@ export default async function Page() {
     }
   }
 
-  return <HomeClient userProfile={userProfile} urgentTask={urgentTask} />;
+  return <HomeWrapper userProfile={userProfile} urgentTask={urgentTask} />;
 }

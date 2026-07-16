@@ -124,12 +124,12 @@ export function TaskModal({ isOpen, onClose, userId, initialData }: TaskModalPro
           />
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
             <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
-              <div className="w-full h-full flex items-center justify-center pointer-events-none">
+              <div className="w-full h-full flex items-center justify-center pointer-events-none p-4 md:p-8">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                   className="w-full max-w-md p-8 rounded-[2rem] bg-[#0c0c0e] border border-white/10 shadow-2xl pointer-events-auto"
                 >
                   <div className="flex justify-between items-center mb-8">

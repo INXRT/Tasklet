@@ -18,7 +18,7 @@ function LoginForm() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
         className="glass-panel p-12 rounded-[3rem] w-full max-w-md flex flex-col items-center shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10"
       >
         <div className="text-center mb-10 flex flex-col items-center">

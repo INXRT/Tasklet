@@ -47,12 +47,12 @@ export function PokemonRosterModal({ isOpen, onClose, userId, pokemons, activePo
           
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
             <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
-              <div className="w-full h-full flex items-center justify-center pointer-events-none">
+              <div className="w-full h-full flex items-center justify-center pointer-events-none p-4 md:p-8">
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                   className="relative w-full max-w-4xl glass-panel rounded-[2rem] p-8 shadow-2xl overflow-hidden pointer-events-auto flex flex-col max-h-[90vh]"
                   onClick={e => e.stopPropagation()}
                 >

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useOptimistic, useTransition } from "react";
 import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store, Backpack, Settings, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { format, addDays, subDays, isSameDay } from "date-fns";
+import { MobileDrawer } from "@/components/ui/MobileDrawer";
 import { TaskModal } from "@/components/ui/TaskModal";
 import { CalendarView } from "@/components/ui/CalendarView";
 import { toggleTaskCompletion, deleteTask } from "@/actions/task";
@@ -25,7 +26,18 @@ const containerVariants: any = {
   exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -50 : 50, transition: { duration: 0.2, ease: "easeIn" } })
 };
 
-export function DashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
+const PokeballIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="45" fill="white" stroke="#333" strokeWidth="5"/>
+    <path d="M5 50 A 45 45 0 0 1 95 50 Z" fill="#ef4444" stroke="#333" strokeWidth="5"/>
+    <circle cx="50" cy="50" r="15" fill="white" stroke="#333" strokeWidth="5"/>
+    <circle cx="50" cy="50" r="6" fill="#333"/>
+    <line x1="5" y1="50" x2="35" y2="50" stroke="#333" strokeWidth="5"/>
+    <line x1="65" y1="50" x2="95" y2="50" stroke="#333" strokeWidth="5"/>
+  </svg>
+);
+
+export function MobileDashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
   const [view, setView] = useState<"calendar" | "list">("list");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<any>(null);
@@ -33,6 +45,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isRosterOpen, setIsRosterOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileTrainerOpen, setIsMobileTrainerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -104,19 +117,15 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
 
   const todaysTasks = optimisticTasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate));
 
-  return (
-    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-      
-      {/* Sidebar: Stats & Companion */}
-      <div className="lg:col-span-4 flex flex-col gap-8">
-        
-        {/* Companion Viewer */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[420px]"
-        >
+  const leftSidebarContent = (
+    <>
+      {/* Companion Viewer */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+        className="rounded-[2rem] glass-panel p-6 relative flex flex-col items-center h-[420px]"
+      >
           <div className="flex justify-start w-full mb-4 z-10">
             <MoodIndicator mood={activePokemon.mood} />
           </div>
@@ -186,21 +195,15 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
             </div>
           </div>
         </motion.div>
+    </>
+  );
 
-        {/* Scratchpad Widget */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-          className="rounded-[2rem] glass-panel p-5 relative flex-1 flex flex-col min-h-[120px]"
-        >
-          <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-3 uppercase">Quick Scratchpad</h3>
-          <textarea 
-            className="w-full flex-1 bg-transparent border-none outline-none resize-none text-zinc-300 placeholder:text-zinc-600 font-sans text-sm custom-scrollbar"
-            placeholder="Jot down quick thoughts here..."
-            defaultValue=""
-          />
-        </motion.div>
+  return (
+    <div className="w-full min-h-[100dvh] lg:h-full lg:min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-3 pb-32 sm:pb-36 lg:p-0">
+      
+      {/* Sidebar: Stats & Companion (Hidden on Mobile) */}
+      <div className="hidden lg:flex lg:col-span-4 flex-col gap-8">
+        {leftSidebarContent}
       </div>
 
       {/* Main Area: Calendar/Tasks */}
@@ -208,12 +211,23 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
-        className="lg:col-span-8 rounded-[2rem] glass-panel p-6 relative flex flex-col"
+        className="lg:col-span-8 rounded-[2rem] glass-panel p-4 sm:p-6 relative flex flex-col overflow-hidden"
       >
+        {/* Mobile Background Flair */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none lg:hidden" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none lg:hidden" />
+
         {/* Header */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 relative z-10 border-b border-white/10 pb-6 gap-6">
-          <div className="flex flex-wrap items-center gap-6">
-            <h1 className="text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <button 
+              onClick={() => setIsMobileTrainerOpen(true)}
+              className="lg:hidden p-2 sm:p-3 rounded-full glass-panel hover:bg-white/10 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)] border border-white/10 flex items-center justify-center group relative overflow-hidden active:scale-95"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <PokeballIcon className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md" />
+            </button>
+            <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
             
             {/* Daily Progress & Streak Ring */}
             <DailyProgressRing 
@@ -231,6 +245,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                   const isSelected = i === 2; // the center one is always selectedDate
                   return (
                     <motion.button
+                      layout
                       initial={{ opacity: 0, scale: 0.8, x: 20 }}
                       animate={{ opacity: 1, scale: isSelected ? 1.1 : 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.8, x: -20 }}
@@ -282,7 +297,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 relative z-10 overflow-y-auto px-4 custom-scrollbar pb-24 overflow-x-hidden -mx-4">
+        <div className="flex-1 relative z-10 lg:overflow-y-auto px-4 lg:custom-scrollbar pb-24 overflow-x-hidden -mx-4">
           {view === "list" ? (
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div 
@@ -391,6 +406,16 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
             </div>
           )}
         </div>
+
+        {/* Scratchpad Widget (Moved to Main Area) */}
+        <div className="rounded-2xl glass-panel p-5 mt-6 relative flex flex-col min-h-[120px] shrink-0 border border-white/10 shadow-inner bg-black/20">
+          <h3 className="font-mono text-xs tracking-widest text-zinc-400 mb-3 uppercase">Quick Scratchpad</h3>
+          <textarea 
+            className="w-full flex-1 bg-transparent border-none outline-none resize-none text-zinc-300 placeholder:text-zinc-600 font-sans text-sm custom-scrollbar"
+            placeholder="Jot down quick thoughts here..."
+            defaultValue=""
+          />
+        </div>
       </motion.div>
 
       {/* MacOS Style Glass Dock */}
@@ -398,7 +423,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-3 glass-panel rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10"
+        className="flex fixed lg:absolute bottom-6 left-1/2 -translate-x-1/2 z-50 items-center gap-1 sm:gap-2 p-2 sm:p-3 glass-panel rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10 bg-black/60 backdrop-blur-xl"
       >
         <div className="relative">
           <button 
@@ -515,27 +540,27 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         initialData={taskToEdit}
       />
 
-      <ShopModal
-        isOpen={isShopOpen}
-        onClose={() => setIsShopOpen(false)}
-        userId={user.id}
-        userCoins={user.coins}
-      />
-
-      <InventoryModal
-        isOpen={isInventoryOpen}
-        onClose={() => setIsInventoryOpen(false)}
-        userId={user.id}
-        inventory={user.inventory || []}
-      />
-
-      <PokemonRosterModal
-        isOpen={isRosterOpen}
-        onClose={() => setIsRosterOpen(false)}
+      <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} userId={user.id} userCoins={user.coins} />
+      <InventoryModal isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} userId={user.id} inventory={user.inventory || []} />
+      <PokemonRosterModal 
+        isOpen={isRosterOpen} 
+        onClose={() => setIsRosterOpen(false)} 
         userId={user.id}
         pokemons={user.pokemons || []}
         activePokemonId={user.activePokemonId}
       />
+
+      {/* Mobile Drawers */}
+      <MobileDrawer 
+        isOpen={isMobileTrainerOpen} 
+        onClose={() => setIsMobileTrainerOpen(false)} 
+        direction="left"
+        title="Trainer Info"
+      >
+        {leftSidebarContent}
+      </MobileDrawer>
     </div>
   );
 }
+
+

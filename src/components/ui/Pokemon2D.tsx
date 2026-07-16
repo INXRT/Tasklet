@@ -42,7 +42,7 @@ export function Pokemon2D({ speciesId, mood = "happy", level = 1, className = ""
         <div className="absolute inset-0 bg-amber-400/20 blur-2xl rounded-full mix-blend-screen -z-10 animate-pulse" />
       )}
       {mood === "sick" && (
-        <div className="absolute inset-0 bg-green-500/10 blur-xl rounded-full mix-blend-overlay -z-10" />
+        <div className="absolute inset-0 bg-green-500/10 blur-xl rounded-full mix-blend-normal -z-10" />
       )}
       
       <motion.img
