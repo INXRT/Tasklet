@@ -37,14 +37,16 @@
 }
 
 @utility glass-panel {
-  background: rgba(255, 255, 255, 0.03); /* Lighter, more translucent base */
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.04) 100%);
+  backdrop-filter: blur(48px) saturate(220%) brightness(110%);
+  -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(110%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 
-    0 10px 40px -10px rgba(0, 0, 0, 0.3), /* Soft ambient shadow instead of heavy drop */
-    inset 0.5px 0.5px 1px 0px rgba(255, 255, 255, 0.3), /* Top/Left specular highlight */
-    inset -0.5px -0.5px 1px 0px rgba(0, 0, 0, 0.2); /* Bottom/Right shadow */
+    0 24px 48px -12px rgba(0, 0, 0, 0.6), /* Deep ambient shadow */
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), /* Crisp top highlight */
+    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.05), /* Soft bottom bounce */
+    inset 2px 0 4px -1px rgba(255, 0, 128, 0.15), /* Left edge diffraction (Magenta) */
+    inset -2px 0 4px -1px rgba(0, 200, 255, 0.15); /* Right edge diffraction (Cyan) */
 }
 
 @utility skeumorphic-btn {

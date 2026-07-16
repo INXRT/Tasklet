@@ -116,9 +116,9 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <div className="flex items-center gap-1.5 text-amber-400 bg-amber-400/10 px-3 py-1 rounded-xl border border-amber-400/20 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
-                  <Coins className="w-3.5 h-3.5" />
-                  <span className="font-mono text-sm">{user.coins}</span>
+                <div className="flex items-center gap-2 bg-white/[0.03] backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-sm">
+                  <Coins className="w-4 h-4 text-amber-400 drop-shadow-sm" />
+                  <span className="font-semibold text-sm text-white/90 tracking-wide">{user.coins}</span>
                 </div>
               </div>
             </div>

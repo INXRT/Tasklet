@@ -23,9 +23,9 @@ export function MoodIndicator({ mood }: MoodIndicatorProps) {
   const Icon = config.icon;
 
   return (
-    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border shadow-sm ${config.bg} ${config.border}`}>
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-sm">
       <Icon className={`w-3.5 h-3.5 ${config.color}`} />
-      <span className={`text-[10px] font-mono tracking-widest uppercase ${config.color}`}>
+      <span className="text-[11px] font-medium tracking-wide text-white/80">
         {config.label}
       </span>
     </div>
