@@ -17,6 +17,12 @@ interface InventoryModalProps {
 export function InventoryModal({ isOpen, onClose, userId, inventory }: InventoryModalProps) {
   const [isPending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
+  const [toast, setToast] = useState<{ message: string, type: 'error' | 'success' } | null>(null);
+
+  const showToast = (message: string, type: 'error' | 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -26,9 +32,9 @@ export function InventoryModal({ isOpen, onClose, userId, inventory }: Inventory
     startTransition(async () => {
       try {
         const res = await consumeItem(userId, userItemId);
-        if (res.message) alert(res.message);
+        if (res.message) showToast(res.message, "success");
       } catch (err: any) {
-        alert(err.message);
+        showToast(err.message, "error");
       }
     });
   };
@@ -56,6 +62,23 @@ export function InventoryModal({ isOpen, onClose, userId, inventory }: Inventory
                   className="relative w-full max-w-2xl glass-panel rounded-[2rem] p-8 shadow-2xl overflow-hidden pointer-events-auto"
                   onClick={e => e.stopPropagation()}
                 >
+            <AnimatePresence>
+              {toast && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                  className={`absolute top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl z-[150] border flex items-center gap-3 backdrop-blur-xl pointer-events-none ${
+                    toast.type === 'error' 
+                      ? 'bg-red-500/20 border-red-500/50 text-red-200' 
+                      : 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
+                  }`}
+                >
+                  <span className="font-medium tracking-wide">{toast.message}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <button 
               onClick={onClose}
               className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors z-50"

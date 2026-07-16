@@ -10,11 +10,14 @@ import { toggleTaskCompletion, deleteTask } from "@/actions/task";
 import { Pokemon2D } from "@/components/ui/Pokemon2D";
 import { ExpBar } from "@/components/ui/ExpBar";
 import { MoodIndicator } from "@/components/ui/MoodIndicator";
+import { playPopSound, playChimeSound } from "@/lib/audio";
 import { ShopModal } from "@/components/ui/ShopModal";
 import { InventoryModal } from "@/components/ui/InventoryModal";
 import { POKEMON_DATA, getPokemonLevel, checkEvolution } from "@/lib/pokemon-data";
 import { signOut } from "next-auth/react";
 import { PokemonRosterModal } from "@/components/ui/PokemonRosterModal";
+import { DailyProgressRing } from "@/components/ui/DailyProgressRing";
+import { QuickFeed } from "@/components/ui/QuickFeed";
 
 const containerVariants: any = {
   hidden: (dir: number) => ({ opacity: 0, x: dir > 0 ? 50 : -50 }),
@@ -48,15 +51,36 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
     }
   );
 
+  const [optimisticXp, addOptimisticXp] = useOptimistic(
+    activePokemon.xp,
+    (state: number, amount: number) => state + amount
+  );
+
+  const [optimisticInventory, addOptimisticInventory] = useOptimistic(
+    user.inventory,
+    (state: any[], itemId: string) => {
+      return state.map(item => 
+        item.id === itemId 
+          ? { ...item, quantity: item.quantity - 1 } 
+          : item
+      ).filter(item => item.quantity > 0);
+    }
+  );
+
   const handleDateChange = (newDate: Date) => {
     setDirection(newDate > selectedDate ? 1 : -1);
     setSelectedDate(newDate);
   };
 
   const pokemonMeta = POKEMON_DATA[activePokemon.pokemonId];
-  const level = getPokemonLevel(activePokemon.xp);
+  const level = getPokemonLevel(optimisticXp);
 
   const handleToggleTask = (id: string, currentStatus: boolean) => {
+    // If completing the task, trigger juice
+    if (!currentStatus) {
+      playPopSound();
+    }
+
     startTransition(() => {
       addOptimisticTask({ action: "toggle", id, currentStatus });
       toggleTaskCompletion(id, currentStatus);
@@ -77,6 +101,8 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
     setIsModalOpen(true);
     setOpenMenuId(null);
   };
+
+  const todaysTasks = optimisticTasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate));
 
   return (
     <div className="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -101,6 +127,16 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
               mood={activePokemon.mood} 
               level={level} 
             />
+            <QuickFeed 
+              inventory={optimisticInventory} 
+              userId={user.id} 
+              onFeed={(itemId, xpAmount) => {
+                startTransition(() => {
+                  addOptimisticInventory(itemId);
+                  addOptimisticXp(xpAmount);
+                });
+              }}
+            />
           </div>
 
           <div className="w-full flex flex-col gap-4 z-10">
@@ -123,7 +159,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
               </div>
             </div>
             
-            <ExpBar xp={activePokemon.xp} evolution={pokemonMeta?.evolution} />
+            <ExpBar xp={optimisticXp} evolution={pokemonMeta?.evolution} />
           </div>
         </motion.div>
 
@@ -175,12 +211,21 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         className="lg:col-span-8 rounded-[2rem] glass-panel p-6 relative flex flex-col"
       >
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 border-b border-white/10 pb-6 gap-4">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 relative z-10 border-b border-white/10 pb-6 gap-6">
+          <div className="flex flex-wrap items-center gap-6">
             <h1 className="text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
             
+            {/* Daily Progress & Streak Ring */}
+            <DailyProgressRing 
+              completed={todaysTasks.filter(t => t.isCompleted).length} 
+              total={todaysTasks.length} 
+              streak={user.streak} 
+            />
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto justify-between xl:justify-end">
             {/* Date Changer Bar */}
-            <div className="flex items-center gap-2 bg-black/40 rounded-full p-1.5 border border-white/5 shadow-inner overflow-hidden">
+            <div className="flex items-center gap-2 bg-black/40 rounded-full p-1.5 border border-white/5 shadow-inner overflow-hidden order-last xl:order-none">
               <AnimatePresence mode="popLayout">
                 {[subDays(selectedDate, 2), subDays(selectedDate, 1), selectedDate, addDays(selectedDate, 1), addDays(selectedDate, 2)].map((date, i) => {
                   const isSelected = i === 2; // the center one is always selectedDate
@@ -208,32 +253,32 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                 })}
               </AnimatePresence>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-4 self-end md:self-auto">
-            <div className="flex items-center p-1 rounded-full bg-black/40 border border-white/10 hidden md:flex shadow-inner">
+
+            <div className="flex items-center gap-4">
+              <div className="flex items-center p-1 rounded-full bg-black/40 border border-white/10 hidden md:flex shadow-inner">
+                <button 
+                  onClick={() => setView("calendar")}
+                  className={`p-2.5 rounded-full transition-all ${view === "calendar" ? "skeumorphic-btn-active text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={() => setView("list")}
+                  className={`p-2.5 rounded-full transition-all ${view === "list" ? "skeumorphic-btn-active text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
+              
               <button 
-                onClick={() => setView("calendar")}
-                className={`p-2.5 rounded-full transition-all ${view === "calendar" ? "skeumorphic-btn-active text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                onClick={() => { setTaskToEdit(null); setIsModalOpen(true); }}
+                className="flex items-center gap-2 px-6 py-2.5 text-black rounded-full transition-all active:scale-95 skeumorphic-btn hover:brightness-110 font-medium text-sm"
+                style={{ background: 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)' }}
               >
-                <CalendarIcon className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={() => setView("list")}
-                className={`p-2.5 rounded-full transition-all ${view === "list" ? "skeumorphic-btn-active text-white" : "text-zinc-500 hover:text-zinc-300"}`}
-              >
-                <List className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
+                New Task
               </button>
             </div>
-            
-            <button 
-              onClick={() => { setTaskToEdit(null); setIsModalOpen(true); }}
-              className="flex items-center gap-2 px-6 py-2.5 text-black rounded-full transition-all active:scale-95 skeumorphic-btn hover:brightness-110 font-medium text-sm"
-              style={{ background: 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)' }}
-            >
-              <Plus className="w-4 h-4" />
-              New Task
-            </button>
           </div>
         </div>
 
@@ -248,48 +293,68 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-3 w-full"
+                className="space-y-3 w-full pt-4"
               >
-                {optimisticTasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate)).length === 0 ? (
+                {todaysTasks.length === 0 ? (
                   <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-zinc-500 border border-white/10 border-dashed rounded-[1.5rem] bg-black/20">
                     <p className="font-serif text-xl mb-2 text-zinc-400">No tasks scheduled.</p>
                     <p className="font-mono text-[10px] uppercase tracking-widest">For {format(selectedDate, "MMM do, yyyy")}</p>
                   </div>
                 ) : (
-                  optimisticTasks
-                    .filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate))
-                    .sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+                  todaysTasks
+                    .sort((a: any, b: any) => {
+                      if (a.isCompleted !== b.isCompleted) {
+                        return a.isCompleted ? 1 : -1;
+                      }
+                      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                    })
                     .map((task: any) => (
-                    <div 
+                    <motion.div 
+                      layout
                       key={task.id} 
-                      className={`relative p-5 rounded-[1.25rem] transition-all duration-400 flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
+                      className={`relative p-5 rounded-2xl transition-all duration-300 flex justify-between items-center group active:scale-[0.98] overflow-hidden hover:z-20 ${
                         task.isCompleted 
-                          ? "bg-white/5 border border-white/5 opacity-60 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]" 
-                          : "bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0.5px_0.5px_1px_rgba(255,255,255,0.2)]"
+                          ? "bg-white/[0.02] border border-white/[0.02] opacity-50 shadow-none" 
+                          : "bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] hover:border-white/20 hover:-translate-y-0.5"
                       }`}
                     >
-                      <div className="flex items-center gap-4">
+                      {/* Optional Highlight Glow when uncompleted */}
+                      {!task.isCompleted && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/[0.02] to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                      )}
+
+                      <div className="flex items-center gap-4 relative z-10">
                         <button 
                           onClick={() => handleToggleTask(task.id, task.isCompleted)}
-                          className={`transition-colors p-1 rounded-full ${task.isCompleted ? "text-emerald-400 bg-emerald-400/10" : "text-zinc-400 group-hover:text-white"}`}
+                          className={`relative flex items-center justify-center w-7 h-7 rounded-full transition-all duration-300 shrink-0 ${
+                            task.isCompleted 
+                              ? "text-emerald-400 bg-emerald-400/10 shadow-[0_0_12px_rgba(52,211,153,0.3)]" 
+                              : "text-zinc-500 bg-black/40 border border-white/10 group-hover:border-emerald-400/30 group-hover:text-emerald-400/80"
+                          }`}
                         >
-                          {task.isCompleted ? <CheckCircle className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
+                          {task.isCompleted ? <CheckCircle className="w-5 h-5" /> : <Circle className="w-5 h-5 opacity-50" />}
                         </button>
                         <div>
-                          <h4 className={`text-lg font-medium tracking-tight drop-shadow-sm transition-colors duration-300 ${task.isCompleted ? "text-white/40 line-through" : "text-white/90 group-hover:text-white"}`}>
+                          <h4 className={`text-lg font-medium tracking-tight transition-colors duration-300 ${task.isCompleted ? "text-white/40 line-through" : "text-white/90 drop-shadow-sm group-hover:text-white"}`}>
                             {task.title}
                           </h4>
-                          <div className="flex items-center gap-3 mt-1.5 opacity-70">
-                            <p className="text-[11px] text-zinc-300 font-medium tracking-wide">{format(new Date(task.dueDate), "MMM do, h:mm a")}</p>
-                            <span className="w-1 h-1 rounded-full bg-zinc-500"></span>
-                            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-                              {task.duration} MIN
+                          <div className="flex items-center gap-2 mt-1 opacity-80">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-widest uppercase bg-black/30 text-zinc-300 border border-white/5">
+                              {format(new Date(task.dueDate), "MMM do")}
+                            </span>
+                            <span className="text-zinc-500 text-[10px]">•</span>
+                            <span className="text-[11px] text-zinc-400 font-medium tracking-wide">
+                              {format(new Date(task.dueDate), "h:mm a")}
+                            </span>
+                            <span className="text-zinc-500 text-[10px]">•</span>
+                            <span className="text-[10px] font-mono tracking-widest text-emerald-400/70 uppercase">
+                              {task.duration}m
                             </span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="relative">
+                      <div className="relative z-10">
                         <button
                           onClick={() => setOpenMenuId(openMenuId === task.id ? null : task.id)}
                           className="p-2 rounded-full text-zinc-500 hover:text-white hover:bg-white/10 transition-colors"
@@ -316,7 +381,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                           </div>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                   ))
                 )}
               </motion.div>

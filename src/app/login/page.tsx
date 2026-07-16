@@ -2,8 +2,17 @@
 
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import Link from "next/link";
 
-export default function LoginPage() {
+import { useGlobalLoader } from "@/components/GlobalLoader";
+
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const { showLoader } = useGlobalLoader();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative z-10 p-4">
       <motion.div 
@@ -12,13 +21,23 @@ export default function LoginPage() {
         transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
         className="glass-panel p-12 rounded-[3rem] w-full max-w-md flex flex-col items-center shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-white/10"
       >
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-serif text-white tracking-tight drop-shadow-md mb-2">PokéQuest</h1>
+        <div className="text-center mb-10 flex flex-col items-center">
+          <Link href="/">
+            <img src="/pokequest.png" alt="PokéQuest" className="w-80 max-w-full filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] mb-4 hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer" />
+          </Link>
           <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Gamified Productivity</p>
         </div>
 
         <button 
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => {
+            showLoader();
+            const params = new URLSearchParams(window.location.search);
+            const rawCallbackUrl = params.get("callbackUrl") || "/dashboard";
+            const absoluteUrl = rawCallbackUrl.startsWith("/") 
+              ? `${window.location.origin}${rawCallbackUrl}` 
+              : rawCallbackUrl;
+            signIn("google", { callbackUrl: absoluteUrl });
+          }}
           className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-black rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)] font-medium text-lg"
         >
           <svg className="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -35,5 +54,13 @@ export default function LoginPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><p>Loading...</p></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

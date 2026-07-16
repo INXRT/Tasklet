@@ -22,6 +22,7 @@ const mono = JetBrains_Mono({
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
 
 import { Providers } from "@/components/Providers";
+import { GlobalLoaderProvider } from "@/components/GlobalLoader";
 
 export const metadata: Metadata = {
   title: "PokéQuest | Pokémon Manager",
@@ -40,7 +41,8 @@ export default function RootLayout({
     >
       <body className="h-dvh w-dvw overflow-hidden font-sans text-foreground selection:bg-white/20 flex flex-col">
         <Providers>
-          <MediaBackground />
+          <GlobalLoaderProvider>
+            <MediaBackground />
           
           {/* The Desktop environment container */}
           <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
@@ -48,6 +50,7 @@ export default function RootLayout({
               {children}
             </div>
           </ScaleWrapper>
+          </GlobalLoaderProvider>
         </Providers>
       </body>
     </html>
