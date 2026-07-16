@@ -26,15 +26,15 @@ const containerVariants: any = {
   exit: {
     transition: {
       staggerChildren: 0.05,
-      staggerDirection: -1
+      staggerDirection: 1
     }
   }
 };
 
 const itemVariants: any = {
-  hidden: (dir: number) => ({ opacity: 0, x: dir > 0 ? 100 : -100 }),
-  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 350, damping: 30 } },
-  exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -100 : 100, transition: { duration: 0.2, ease: "easeIn" } })
+  hidden: (dir: number) => ({ opacity: 0, x: dir > 0 ? 50 : -50, scale: 0.95 }),
+  visible: { opacity: 1, x: 0, scale: 1, transition: { type: "spring", stiffness: 400, damping: 30 } },
+  exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -50 : 50, scale: 0.95, transition: { duration: 0.2, ease: "easeIn" } })
 };
 
 export function DashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
@@ -51,8 +51,6 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
     setDirection(newDate > selectedDate ? 1 : -1);
     setSelectedDate(newDate);
   };
-
-  const [optimisticTasks, setOptimisticTasks] = useState(user.tasks || []);
 
   const pokemonMeta = POKEMON_DATA[activePokemon.pokemonId];
   const level = getPokemonLevel(activePokemon.xp);
@@ -233,25 +231,31 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                 exit="exit"
                 className="space-y-3 w-full"
               >
-                {optimisticTasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate)).length === 0 ? (
+                {user.tasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate)).length === 0 ? (
                   <motion.div variants={itemVariants} custom={direction} className="h-full min-h-[300px] flex flex-col items-center justify-center text-zinc-500 border border-white/10 border-dashed rounded-[1.5rem] bg-black/20">
                     <p className="font-serif text-xl mb-2 text-zinc-400">No tasks scheduled.</p>
                     <p className="font-mono text-[10px] uppercase tracking-widest">For {format(selectedDate, "MMM do, yyyy")}</p>
                   </motion.div>
                 ) : (
-                  optimisticTasks
-                    .filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate))
-                    .map((task: any) => (
-                    <motion.div 
-                      key={task.id} 
-                      variants={itemVariants}
-                      custom={direction}
-                      className={`relative p-5 rounded-[1.25rem] transition-all duration-400 flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
-                        task.isCompleted 
-                          ? "bg-white/5 border border-white/5 opacity-60 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]" 
-                          : "bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0.5px_0.5px_1px_rgba(255,255,255,0.2)]"
-                      }`}
-                    >
+                  <AnimatePresence mode="popLayout">
+                    {user.tasks
+                      .filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate))
+                      .sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+                      .map((task: any) => (
+                      <motion.div 
+                        key={task.id} 
+                        variants={itemVariants}
+                        layout
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        custom={direction}
+                        className={`relative p-5 rounded-[1.25rem] transition-all duration-400 flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
+                          task.isCompleted 
+                            ? "bg-white/5 border border-white/5 opacity-60 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]" 
+                            : "bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0.5px_0.5px_1px_rgba(255,255,255,0.2)]"
+                        }`}
+                      >
                       <div className="flex items-center gap-4">
                         <button 
                           onClick={() => handleToggleTask(task.id, task.isCompleted)}
@@ -273,7 +277,8 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
                         </div>
                       </div>
                     </motion.div>
-                  ))
+                    ))}
+                  </AnimatePresence>
                 )}
               </motion.div>
             </AnimatePresence>
