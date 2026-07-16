@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { createTask, createRecurringTasks } from "@/actions/task";
+import { createTask, createRecurringTasks, updateTask } from "@/actions/task";
 import { MultiDatePicker } from "@/components/ui/MultiDatePicker";
 import { createPortal } from "react-dom";
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
@@ -12,9 +12,10 @@ interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
+  initialData?: any;
 }
 
-export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
+export function TaskModal({ isOpen, onClose, userId, initialData }: TaskModalProps) {
   const [isPending, startTransition] = useTransition();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -28,6 +29,21 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (initialData && isOpen) {
+      setTitle(initialData.title);
+      setDuration(initialData.duration.toString());
+      
+      const d = new Date(initialData.dueDate);
+      setDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+      setTime(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`);
+      
+      setRepeatMode("NONE"); // Only edit single instance as discussed
+      setCustomDates([]);
+    }
+  }, [initialData, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,10 +82,20 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
     }
 
     startTransition(() => {
-      if (targetDates.length === 1 && repeatMode === "NONE") {
-        createTask(userId, title, targetDates[0], Number(duration)).then(() => resetForm());
+      if (initialData) {
+        // Edit mode
+        updateTask(initialData.id, {
+          title,
+          dueDate: targetDates[0],
+          duration: Number(duration)
+        }).then(() => resetForm());
       } else {
-        createRecurringTasks(userId, title, targetDates, Number(duration), repeatMode).then(() => resetForm());
+        // Create mode
+        if (targetDates.length === 1 && repeatMode === "NONE") {
+          createTask(userId, title, targetDates[0], Number(duration)).then(() => resetForm());
+        } else {
+          createRecurringTasks(userId, title, targetDates, Number(duration), repeatMode).then(() => resetForm());
+        }
       }
     });
   };
@@ -107,7 +133,14 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                   className="w-full max-w-md p-8 rounded-[2rem] bg-[#0c0c0e] border border-white/10 shadow-2xl pointer-events-auto"
                 >
                   <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-3xl font-serif text-white tracking-tight">New Schedule</h2>
+                    <div>
+                      <h2 className="text-3xl font-serif text-white tracking-tight drop-shadow-sm">
+                        {initialData ? "Edit Task" : "New Task"}
+                      </h2>
+                      <p className="text-zinc-400 text-sm">
+                        {initialData ? "Make changes to your task." : "What do you need to get done?"}
+                      </p>
+                    </div>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-colors">
                       <X className="w-5 h-5" />
                     </button>
@@ -125,25 +158,30 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                         required
                       />
                     </div>
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Repeat Mode</label>
-                      <div className="flex bg-white/5 rounded-xl p-1 border border-white/10 mb-4">
-                        {["NONE", "DAILY", "WEEKLY", "CUSTOM"].map((mode) => (
-                          <button
-                            key={mode}
-                            type="button"
-                            onClick={() => setRepeatMode(mode as any)}
-                            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all ${
-                              repeatMode === mode ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-white hover:bg-white/5"
-                            }`}
-                          >
-                            {mode.charAt(0) + mode.slice(1).toLowerCase()}
-                          </button>
-                        ))}
+                    <div className="space-y-4">
+                    {!initialData && (
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">Repeat Mode</label>
+                        <div className="flex gap-2">
+                          {["NONE", "DAILY", "WEEKLY", "CUSTOM"].map((mode) => (
+                            <button
+                              key={mode}
+                              type="button"
+                              onClick={() => setRepeatMode(mode as any)}
+                              className={`flex-1 py-2 text-xs font-medium rounded-xl border transition-colors ${
+                                repeatMode === mode 
+                                  ? "bg-white/10 border-white/20 text-white" 
+                                  : "bg-transparent border-white/5 text-zinc-500 hover:text-zinc-300 hover:border-white/10"
+                              }`}
+                            >
+                              {mode}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    {repeatMode === "CUSTOM" ? (
+                    {repeatMode === "CUSTOM" && !initialData ? (
                       <div>
                         <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Select Dates</label>
                         <MultiDatePicker selectedDates={customDates} onChange={setCustomDates} />
@@ -162,7 +200,7 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                             required
                           />
                         </div>
-                        {repeatMode !== "NONE" && (
+                        {repeatMode !== "NONE" && !initialData && (
                           <div>
                             <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Occurrences</label>
                             <input 
@@ -178,6 +216,7 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                         )}
                       </div>
                     )}
+                    </div>
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -204,11 +243,10 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                     <button 
                       type="submit"
                       disabled={isPending}
-                      className={`w-full py-4 rounded-xl font-medium tracking-wide transition-all ${
-                        isPending ? "bg-white/20 text-white/50 cursor-not-allowed" : "bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                      }`}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-4 text-black rounded-xl transition-all active:scale-95 skeumorphic-btn hover:brightness-110 font-medium disabled:opacity-50"
+                      style={{ background: 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)' }}
                     >
-                      {isPending ? "Initializing..." : "Commit Directive"}
+                      {isPending ? "Saving..." : (initialData ? "Save Changes" : "Create Task")}
                     </button>
                   </form>
                 </motion.div>
