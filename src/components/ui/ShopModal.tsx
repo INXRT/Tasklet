@@ -6,6 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import { purchaseItem } from "@/actions/shop";
 import { createPortal } from "react-dom";
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
+import { GachaOverlay } from "@/components/ui/GachaOverlay";
 
 interface ShopModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
   const [items, setItems] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
+  const [gachaResult, setGachaResult] = useState<any | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -40,7 +42,7 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
       try {
         const res = await purchaseItem(userId, itemId);
         if ('gachaResult' in res && res.gachaResult) {
-          alert(res.gachaResult.message);
+          setGachaResult(res.gachaResult);
         } else if ('message' in res) {
           alert(res.message);
         }
@@ -51,9 +53,10 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
   };
 
   const modalContent = (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100]">
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-[100]">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -75,7 +78,7 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
                 >
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors z-50"
             >
               <X className="w-5 h-5" />
             </button>
@@ -139,6 +142,10 @@ export function ShopModal({ isOpen, onClose, userId, userCoins }: ShopModalProps
         </div>
       )}
     </AnimatePresence>
+    
+    {/* Gacha Overlay portal - Must be outside AnimatePresence since it manages its own */}
+    {mounted && <GachaOverlay result={gachaResult} onClose={() => setGachaResult(null)} />}
+    </>
   );
 
   return mounted ? createPortal(modalContent, document.body) : null;

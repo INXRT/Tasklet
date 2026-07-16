@@ -94,6 +94,9 @@ model Task {
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  recurrenceRule String?
+  parentTaskId   String?
+  
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }

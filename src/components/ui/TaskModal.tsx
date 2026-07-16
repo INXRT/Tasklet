@@ -3,7 +3,8 @@
 import { useState, useTransition, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { createTask } from "@/actions/task";
+import { createTask, createRecurringTasks } from "@/actions/task";
+import { MultiDatePicker } from "@/components/ui/MultiDatePicker";
 import { createPortal } from "react-dom";
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
 
@@ -19,6 +20,9 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState("60");
+  const [repeatMode, setRepeatMode] = useState<"NONE" | "DAILY" | "WEEKLY" | "CUSTOM">("NONE");
+  const [occurrences, setOccurrences] = useState("7");
+  const [customDates, setCustomDates] = useState<Date[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -27,25 +31,58 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !date) return;
-
-    const [year, month, day] = date.split("-");
+    if (!title) return;
+    
     let hours = "12", minutes = "00";
     if (time) {
       [hours, minutes] = time.split(":");
     }
 
-    const dueDate = new Date(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes));
+    let targetDates: Date[] = [];
+    
+    if (repeatMode === "CUSTOM") {
+      if (customDates.length === 0) return;
+      targetDates = customDates.map(d => {
+        const clone = new Date(d);
+        clone.setHours(Number(hours), Number(minutes));
+        return clone;
+      });
+    } else {
+      if (!date) return;
+      const [year, month, day] = date.split("-");
+      const baseDate = new Date(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes));
+      
+      if (repeatMode === "NONE") {
+        targetDates = [baseDate];
+      } else if (repeatMode === "DAILY") {
+        for (let i = 0; i < Number(occurrences); i++) {
+          targetDates.push(new Date(baseDate.getTime() + i * 24 * 60 * 60 * 1000));
+        }
+      } else if (repeatMode === "WEEKLY") {
+        for (let i = 0; i < Number(occurrences); i++) {
+          targetDates.push(new Date(baseDate.getTime() + i * 7 * 24 * 60 * 60 * 1000));
+        }
+      }
+    }
 
     startTransition(() => {
-      createTask(userId, title, dueDate, Number(duration)).then(() => {
-        onClose();
-        setTitle("");
-        setDate("");
-        setTime("");
-        setDuration("60");
-      });
+      if (targetDates.length === 1 && repeatMode === "NONE") {
+        createTask(userId, title, targetDates[0], Number(duration)).then(() => resetForm());
+      } else {
+        createRecurringTasks(userId, title, targetDates, Number(duration), repeatMode).then(() => resetForm());
+      }
     });
+  };
+
+  const resetForm = () => {
+    onClose();
+    setTitle("");
+    setDate("");
+    setTime("");
+    setDuration("60");
+    setRepeatMode("NONE");
+    setOccurrences("7");
+    setCustomDates([]);
   };
 
   const modalContent = (
@@ -88,18 +125,61 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                         required
                       />
                     </div>
+                    <div>
+                      <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Repeat Mode</label>
+                      <div className="flex bg-white/5 rounded-xl p-1 border border-white/10 mb-4">
+                        {["NONE", "DAILY", "WEEKLY", "CUSTOM"].map((mode) => (
+                          <button
+                            key={mode}
+                            type="button"
+                            onClick={() => setRepeatMode(mode as any)}
+                            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all ${
+                              repeatMode === mode ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-white hover:bg-white/5"
+                            }`}
+                          >
+                            {mode.charAt(0) + mode.slice(1).toLowerCase()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {repeatMode === "CUSTOM" ? (
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Select Dates</label>
+                        <MultiDatePicker selectedDates={customDates} onChange={setCustomDates} />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">
+                            {repeatMode === "NONE" ? "Date" : "Start Date"}
+                          </label>
+                          <input 
+                            type="date" 
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                            required
+                          />
+                        </div>
+                        {repeatMode !== "NONE" && (
+                          <div>
+                            <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Occurrences</label>
+                            <input 
+                              type="number" 
+                              value={occurrences}
+                              onChange={(e) => setOccurrences(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                              min="1"
+                              max="365"
+                              required
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Date</label>
-                        <input 
-                          type="date" 
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                          required
-                        />
-                      </div>
                       <div>
                         <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Time (Optional)</label>
                         <input 
@@ -109,17 +189,16 @@ export function TaskModal({ isOpen, onClose, userId }: TaskModalProps) {
                           className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
                         />
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Duration (Minutes)</label>
-                      <input 
-                        type="number" 
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                        min="1"
-                      />
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Duration (Minutes)</label>
+                        <input 
+                          type="number" 
+                          value={duration}
+                          onChange={(e) => setDuration(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                          min="1"
+                        />
+                      </div>
                     </div>
 
                     <button 

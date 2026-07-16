@@ -1,16 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { getPokemonLevel } from "@/lib/pokemon-data";
+import { getPokemonLevel, Evolution } from "@/lib/pokemon-data";
 
 interface ExpBarProps {
   xp: number;
+  evolution?: Evolution;
 }
 
-export function ExpBar({ xp }: ExpBarProps) {
+export function ExpBar({ xp, evolution }: ExpBarProps) {
   const currentLevel = getPokemonLevel(xp);
   const xpForCurrentLevel = (currentLevel - 1) * 100;
-  const xpForNextLevel = currentLevel * 100;
   
   const xpInLevel = xp - xpForCurrentLevel;
   const percentage = (xpInLevel / 100) * 100;
@@ -18,7 +18,12 @@ export function ExpBar({ xp }: ExpBarProps) {
   return (
     <div className="w-full flex flex-col gap-1.5">
       <div className="flex justify-between items-center text-[10px] font-mono tracking-widest uppercase text-white/70">
-        <span>Level {currentLevel}</span>
+        <div className="flex gap-3">
+          <span>Level {currentLevel}</span>
+          {evolution && (
+            <span className="text-emerald-400/80">Evolves at Lv.{evolution.level}</span>
+          )}
+        </div>
         <span>{xpInLevel} / 100 XP</span>
       </div>
       

@@ -58,7 +58,7 @@ export function InventoryModal({ isOpen, onClose, userId, inventory }: Inventory
                 >
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors z-50"
             >
               <X className="w-5 h-5" />
             </button>

@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store, Backpack, Settings } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays, subDays, isSameDay } from "date-fns";
 import { TaskModal } from "@/components/ui/TaskModal";
 import { CalendarView } from "@/components/ui/CalendarView";
 import { toggleTaskCompletion } from "@/actions/task";
@@ -16,6 +16,27 @@ import { POKEMON_DATA, getPokemonLevel, checkEvolution } from "@/lib/pokemon-dat
 import { signOut } from "next-auth/react";
 import { PokemonRosterModal } from "@/components/ui/PokemonRosterModal";
 
+const containerVariants: any = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08
+    }
+  },
+  exit: {
+    transition: {
+      staggerChildren: 0.05,
+      staggerDirection: -1
+    }
+  }
+};
+
+const itemVariants: any = {
+  hidden: (dir: number) => ({ opacity: 0, x: dir > 0 ? 100 : -100 }),
+  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 350, damping: 30 } },
+  exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -100 : 100, transition: { duration: 0.2, ease: "easeIn" } })
+};
+
 export function DashboardClient({ user, activePokemon }: { user: any; activePokemon: any }) {
   const [view, setView] = useState<"calendar" | "list">("list");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,6 +44,15 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isRosterOpen, setIsRosterOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [direction, setDirection] = useState(0);
+
+  const handleDateChange = (newDate: Date) => {
+    setDirection(newDate > selectedDate ? 1 : -1);
+    setSelectedDate(newDate);
+  };
+
+  const [optimisticTasks, setOptimisticTasks] = useState(user.tasks || []);
 
   const pokemonMeta = POKEMON_DATA[activePokemon.pokemonId];
   const level = getPokemonLevel(activePokemon.xp);
@@ -76,7 +106,7 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
               </div>
             </div>
             
-            <ExpBar xp={activePokemon.xp} />
+            <ExpBar xp={activePokemon.xp} evolution={pokemonMeta?.evolution} />
           </div>
         </motion.div>
 
@@ -128,15 +158,42 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         className="lg:col-span-8 rounded-[2rem] glass-panel p-6 relative flex flex-col"
       >
         {/* Header */}
-        <div className="flex justify-between items-center mb-8 relative z-10 border-b border-white/10 pb-6">
-          <div>
-            <h1 className="text-4xl font-serif text-white tracking-tight mb-2 drop-shadow-md">Schedule</h1>
-            <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">
-              {format(new Date(), "MMMM do, yyyy")}
-            </p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10 border-b border-white/10 pb-6 gap-4">
+          <div className="flex items-center gap-6">
+            <h1 className="text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
+            
+            {/* Date Changer Bar */}
+            <div className="flex items-center gap-2 bg-black/40 rounded-full p-1.5 border border-white/5 shadow-inner overflow-hidden">
+              <AnimatePresence mode="popLayout">
+                {[subDays(selectedDate, 2), subDays(selectedDate, 1), selectedDate, addDays(selectedDate, 1), addDays(selectedDate, 2)].map((date, i) => {
+                  const isSelected = i === 2; // the center one is always selectedDate
+                  return (
+                    <motion.button
+                      layout
+                      initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                      animate={{ opacity: 1, scale: isSelected ? 1.1 : 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.8, x: -20 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      key={date.toISOString()}
+                      onClick={() => handleDateChange(date)}
+                      className={`flex flex-col items-center justify-center w-12 h-14 rounded-full transition-colors duration-300 shrink-0 ${
+                        isSelected 
+                          ? "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] text-black" 
+                          : "text-zinc-400 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      <span className={`text-[9px] uppercase tracking-widest ${isSelected ? "text-black/70 font-bold" : "text-zinc-500 font-medium"}`}>
+                        {format(date, "EEE")}
+                      </span>
+                      <span className={`text-lg mt-0.5 ${isSelected ? "font-bold" : "font-semibold"}`}>{format(date, "d")}</span>
+                    </motion.button>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 self-end md:self-auto">
             <div className="flex items-center p-1 rounded-full bg-black/40 border border-white/10 hidden md:flex shadow-inner">
               <button 
                 onClick={() => setView("calendar")}
@@ -164,48 +221,62 @@ export function DashboardClient({ user, activePokemon }: { user: any; activePoke
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 relative z-10 overflow-y-auto pr-2 custom-scrollbar pb-24">
+        <div className="flex-1 relative z-10 overflow-y-auto pr-2 custom-scrollbar pb-24 overflow-x-hidden">
           {view === "list" ? (
-            <div className="space-y-3">
-              {user.tasks.length === 0 ? (
-                <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-zinc-500 border border-white/10 border-dashed rounded-[1.5rem] bg-black/20">
-                  <p className="font-serif text-xl mb-2 text-zinc-400">No tasks scheduled.</p>
-                  <p className="font-mono text-[10px] uppercase tracking-widest">Awaiting input</p>
-                </div>
-              ) : (
-                user.tasks.map((task: any) => (
-                  <div 
-                    key={task.id} 
-                    className={`relative p-5 rounded-[1.25rem] transition-all duration-400 flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
-                      task.isCompleted 
-                        ? "bg-white/5 border border-white/5 opacity-60 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]" 
-                        : "bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0.5px_0.5px_1px_rgba(255,255,255,0.2)]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <button 
-                        onClick={() => handleToggleTask(task.id, task.isCompleted)}
-                        className={`transition-colors p-1 rounded-full ${task.isCompleted ? "text-emerald-400 bg-emerald-400/10" : "text-zinc-400 group-hover:text-white"}`}
-                      >
-                        {task.isCompleted ? <CheckCircle className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
-                      </button>
-                      <div>
-                        <h4 className={`text-lg font-medium tracking-tight drop-shadow-sm transition-colors duration-300 ${task.isCompleted ? "text-white/40 line-through" : "text-white/90 group-hover:text-white"}`}>
-                          {task.title}
-                        </h4>
-                        <div className="flex items-center gap-3 mt-1.5 opacity-70">
-                          <p className="text-[11px] text-zinc-300 font-medium tracking-wide">{format(new Date(task.dueDate), "MMM do, h:mm a")}</p>
-                          <span className="w-1 h-1 rounded-full bg-zinc-500"></span>
-                          <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-                            {task.duration} MIN
-                          </span>
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div 
+                key={selectedDate.toISOString()}
+                custom={direction}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="space-y-3 w-full"
+              >
+                {optimisticTasks.filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate)).length === 0 ? (
+                  <motion.div variants={itemVariants} custom={direction} className="h-full min-h-[300px] flex flex-col items-center justify-center text-zinc-500 border border-white/10 border-dashed rounded-[1.5rem] bg-black/20">
+                    <p className="font-serif text-xl mb-2 text-zinc-400">No tasks scheduled.</p>
+                    <p className="font-mono text-[10px] uppercase tracking-widest">For {format(selectedDate, "MMM do, yyyy")}</p>
+                  </motion.div>
+                ) : (
+                  optimisticTasks
+                    .filter((t: any) => isSameDay(new Date(t.dueDate), selectedDate))
+                    .map((task: any) => (
+                    <motion.div 
+                      key={task.id} 
+                      variants={itemVariants}
+                      custom={direction}
+                      className={`relative p-5 rounded-[1.25rem] transition-all duration-400 flex justify-between items-center group hover:scale-[1.01] active:scale-[0.98] ${
+                        task.isCompleted 
+                          ? "bg-white/5 border border-white/5 opacity-60 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]" 
+                          : "bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0.5px_0.5px_1px_rgba(255,255,255,0.2)]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <button 
+                          onClick={() => handleToggleTask(task.id, task.isCompleted)}
+                          className={`transition-colors p-1 rounded-full ${task.isCompleted ? "text-emerald-400 bg-emerald-400/10" : "text-zinc-400 group-hover:text-white"}`}
+                        >
+                          {task.isCompleted ? <CheckCircle className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
+                        </button>
+                        <div>
+                          <h4 className={`text-lg font-medium tracking-tight drop-shadow-sm transition-colors duration-300 ${task.isCompleted ? "text-white/40 line-through" : "text-white/90 group-hover:text-white"}`}>
+                            {task.title}
+                          </h4>
+                          <div className="flex items-center gap-3 mt-1.5 opacity-70">
+                            <p className="text-[11px] text-zinc-300 font-medium tracking-wide">{format(new Date(task.dueDate), "MMM do, h:mm a")}</p>
+                            <span className="w-1 h-1 rounded-full bg-zinc-500"></span>
+                            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                              {task.duration} MIN
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                    </motion.div>
+                  ))
+                )}
+              </motion.div>
+            </AnimatePresence>
           ) : (
             <div className="h-full min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-inner mb-24">
               <CalendarView tasks={user.tasks} />

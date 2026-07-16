@@ -27,6 +27,34 @@ export async function createTask(userId: string, title: string, dueDate: Date, d
   return task;
 }
 
+export async function createRecurringTasks(userId: string, title: string, dueDates: Date[], durationMinutes: number = 60, recurrenceRule: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || session.user.id !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const prisma = getPrisma();
+  const parentTaskId = Math.random().toString(36).substring(2, 15); // Simple unique ID for grouping
+
+  const tasksData = dueDates.map(dueDate => ({
+    userId,
+    title,
+    dueDate,
+    duration: durationMinutes,
+    isCompleted: false,
+    urgency: "LOW",
+    recurrenceRule,
+    parentTaskId
+  }));
+
+  await prisma.task.createMany({
+    data: tasksData
+  });
+  
+  revalidatePath("/dashboard");
+  return { success: true, count: dueDates.length };
+}
+
 export async function updateTask(id: string, data: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");

@@ -63,17 +63,79 @@ export async function purchaseItem(userId: string, shopItemId: string) {
 async function openGacha(userId: string) {
   const prisma = getPrisma();
   
-  // Random starter pokemon
-  const starters = ["bulbasaur", "charmander", "pichu"];
-  const randomPokemon = starters[Math.floor(Math.random() * starters.length)];
+  // Dynamically load data so we don't break server actions
+  const { POKEMON_DATA } = await import("@/lib/pokemon-data");
   
-  // Random chance for shiny
+  const allPokemon = Object.values(POKEMON_DATA);
+  const commons = allPokemon.filter(p => p.rarity === "COMMON").map(p => p.id);
+  const rares = allPokemon.filter(p => p.rarity === "RARE").map(p => p.id);
+  const legendaries = allPokemon.filter(p => p.rarity === "LEGENDARY").map(p => p.id);
+
+  // Weighted RNG: 70% Common, 25% Rare, 5% Legendary
+  const roll = Math.random();
+  let selectedPool = commons;
+  let rarity = "COMMON";
+  
+  if (roll > 0.95 && legendaries.length > 0) {
+    selectedPool = legendaries;
+    rarity = "LEGENDARY";
+  } else if (roll > 0.70 && rares.length > 0) {
+    selectedPool = rares;
+    rarity = "RARE";
+  }
+
+  const randomPokemonId = selectedPool[Math.floor(Math.random() * selectedPool.length)];
   const isShiny = Math.random() < 0.05; // 5% chance
 
-  const newPokemon = await prisma.userPokemon.create({
+  // Check if user already owns this Pokemon
+  const existingPokemon = await prisma.userPokemon.findFirst({
+    where: {
+      userId,
+      pokemonId: randomPokemonId
+    }
+  });
+
+  if (existingPokemon) {
+    // Dismantle duplicate into Oran Berry (Assuming Oran Berry shop item exists, we'll find its ID)
+    const oranBerryShopItem = await prisma.shopItem.findFirst({
+      where: { name: "Oran Berry" }
+    });
+
+    if (oranBerryShopItem) {
+      const existingItem = await prisma.userItem.findUnique({
+        where: { userId_shopItemId: { userId, shopItemId: oranBerryShopItem.id } }
+      });
+
+      if (existingItem) {
+        await prisma.userItem.update({
+          where: { id: existingItem.id },
+          data: { quantity: { increment: 1 } }
+        });
+      } else {
+        await prisma.userItem.create({
+          data: { userId, shopItemId: oranBerryShopItem.id, quantity: 1 }
+        });
+      }
+    }
+
+    revalidatePath("/dashboard");
+    return {
+      success: true,
+      gachaResult: {
+        pokemonId: randomPokemonId,
+        isShiny,
+        isDuplicate: true,
+        message: `Duplicate ${randomPokemonId} dismantled into an Oran Berry!`,
+        rarity
+      }
+    };
+  }
+
+  // If not duplicate, create it
+  await prisma.userPokemon.create({
     data: {
       userId,
-      pokemonId: randomPokemon,
+      pokemonId: randomPokemonId,
       xp: 0,
       mood: "happy",
       isShiny
@@ -84,9 +146,11 @@ async function openGacha(userId: string) {
   return { 
     success: true, 
     gachaResult: {
-      pokemonId: randomPokemon,
+      pokemonId: randomPokemonId,
       isShiny,
-      message: `You got a ${isShiny ? 'SHINY ' : ''}${randomPokemon}!`
+      isDuplicate: false,
+      message: `You got a ${isShiny ? 'SHINY ' : ''}${randomPokemonId}!`,
+      rarity
     }
   };
 }
