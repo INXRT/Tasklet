@@ -107,14 +107,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 10,
     "name": "Caterpie",
     "type": "bug",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 7,
+      "speciesId": "metapod"
+    }
   },
   "metapod": {
     "id": "metapod",
     "dexId": 11,
     "name": "Metapod",
     "type": "bug",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 10,
+      "speciesId": "butterfree"
+    }
   },
   "butterfree": {
     "id": "butterfree",
@@ -128,14 +136,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 13,
     "name": "Weedle",
     "type": "bug/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 7,
+      "speciesId": "kakuna"
+    }
   },
   "kakuna": {
     "id": "kakuna",
     "dexId": 14,
     "name": "Kakuna",
     "type": "bug/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 10,
+      "speciesId": "beedrill"
+    }
   },
   "beedrill": {
     "id": "beedrill",
@@ -149,14 +165,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 16,
     "name": "Pidgey",
     "type": "normal/flying",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 18,
+      "speciesId": "pidgeotto"
+    }
   },
   "pidgeotto": {
     "id": "pidgeotto",
     "dexId": 17,
     "name": "Pidgeotto",
     "type": "normal/flying",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "pidgeot"
+    }
   },
   "pidgeot": {
     "id": "pidgeot",
@@ -170,7 +194,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 19,
     "name": "Rattata",
     "type": "normal",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 20,
+      "speciesId": "raticate"
+    }
   },
   "raticate": {
     "id": "raticate",
@@ -184,7 +212,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 21,
     "name": "Spearow",
     "type": "normal/flying",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 20,
+      "speciesId": "fearow"
+    }
   },
   "fearow": {
     "id": "fearow",
@@ -198,7 +230,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 23,
     "name": "Ekans",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 22,
+      "speciesId": "arbok"
+    }
   },
   "arbok": {
     "id": "arbok",
@@ -216,6 +252,10 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "evolution": {
       "level": 25,
       "speciesId": "raichu"
+    },
+    "evolution": {
+      "level": 25,
+      "speciesId": "raichu"
     }
   },
   "raichu": {
@@ -230,7 +270,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 27,
     "name": "Sandshrew",
     "type": "ground",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 22,
+      "speciesId": "sandslash"
+    }
   },
   "sandslash": {
     "id": "sandslash",
@@ -244,14 +288,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 29,
     "name": "Nidoran-f",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 16,
+      "speciesId": "nidorina"
+    }
   },
   "nidorina": {
     "id": "nidorina",
     "dexId": 30,
     "name": "Nidorina",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "nidoqueen"
+    }
   },
   "nidoqueen": {
     "id": "nidoqueen",
@@ -265,14 +317,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 32,
     "name": "Nidoran-m",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 16,
+      "speciesId": "nidorino"
+    }
   },
   "nidorino": {
     "id": "nidorino",
     "dexId": 33,
     "name": "Nidorino",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "nidoking"
+    }
   },
   "nidoking": {
     "id": "nidoking",
@@ -286,7 +346,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 35,
     "name": "Clefairy",
     "type": "fairy",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "clefable"
+    }
   },
   "clefable": {
     "id": "clefable",
@@ -300,7 +364,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 37,
     "name": "Vulpix",
     "type": "fire",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "ninetales"
+    }
   },
   "ninetales": {
     "id": "ninetales",
@@ -314,7 +382,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 39,
     "name": "Jigglypuff",
     "type": "normal/fairy",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "wigglytuff"
+    }
   },
   "wigglytuff": {
     "id": "wigglytuff",
@@ -328,7 +400,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 41,
     "name": "Zubat",
     "type": "poison/flying",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 22,
+      "speciesId": "golbat"
+    }
   },
   "golbat": {
     "id": "golbat",
@@ -342,14 +418,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 43,
     "name": "Oddish",
     "type": "grass/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 21,
+      "speciesId": "gloom"
+    }
   },
   "gloom": {
     "id": "gloom",
     "dexId": 44,
     "name": "Gloom",
     "type": "grass/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "vileplume"
+    }
   },
   "vileplume": {
     "id": "vileplume",
@@ -363,7 +447,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 46,
     "name": "Paras",
     "type": "bug/grass",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 24,
+      "speciesId": "parasect"
+    }
   },
   "parasect": {
     "id": "parasect",
@@ -377,7 +465,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 48,
     "name": "Venonat",
     "type": "bug/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 31,
+      "speciesId": "venomoth"
+    }
   },
   "venomoth": {
     "id": "venomoth",
@@ -391,7 +483,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 50,
     "name": "Diglett",
     "type": "ground",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 26,
+      "speciesId": "dugtrio"
+    }
   },
   "dugtrio": {
     "id": "dugtrio",
@@ -405,7 +501,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 52,
     "name": "Meowth",
     "type": "normal",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 28,
+      "speciesId": "persian"
+    }
   },
   "persian": {
     "id": "persian",
@@ -419,7 +519,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 54,
     "name": "Psyduck",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 33,
+      "speciesId": "golduck"
+    }
   },
   "golduck": {
     "id": "golduck",
@@ -433,7 +537,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 56,
     "name": "Mankey",
     "type": "fighting",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 28,
+      "speciesId": "primeape"
+    }
   },
   "primeape": {
     "id": "primeape",
@@ -447,7 +555,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 58,
     "name": "Growlithe",
     "type": "fire",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "arcanine"
+    }
   },
   "arcanine": {
     "id": "arcanine",
@@ -461,14 +573,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 60,
     "name": "Poliwag",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 25,
+      "speciesId": "poliwhirl"
+    }
   },
   "poliwhirl": {
     "id": "poliwhirl",
     "dexId": 61,
     "name": "Poliwhirl",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "poliwrath"
+    }
   },
   "poliwrath": {
     "id": "poliwrath",
@@ -482,14 +602,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 63,
     "name": "Abra",
     "type": "psychic",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 16,
+      "speciesId": "kadabra"
+    }
   },
   "kadabra": {
     "id": "kadabra",
     "dexId": 64,
     "name": "Kadabra",
     "type": "psychic",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "alakazam"
+    }
   },
   "alakazam": {
     "id": "alakazam",
@@ -503,14 +631,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 66,
     "name": "Machop",
     "type": "fighting",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 28,
+      "speciesId": "machoke"
+    }
   },
   "machoke": {
     "id": "machoke",
     "dexId": 67,
     "name": "Machoke",
     "type": "fighting",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "machamp"
+    }
   },
   "machamp": {
     "id": "machamp",
@@ -524,14 +660,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 69,
     "name": "Bellsprout",
     "type": "grass/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 21,
+      "speciesId": "weepinbell"
+    }
   },
   "weepinbell": {
     "id": "weepinbell",
     "dexId": 70,
     "name": "Weepinbell",
     "type": "grass/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "victreebel"
+    }
   },
   "victreebel": {
     "id": "victreebel",
@@ -545,7 +689,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 72,
     "name": "Tentacool",
     "type": "water/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 30,
+      "speciesId": "tentacruel"
+    }
   },
   "tentacruel": {
     "id": "tentacruel",
@@ -559,14 +707,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 74,
     "name": "Geodude",
     "type": "rock/ground",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 25,
+      "speciesId": "graveler"
+    }
   },
   "graveler": {
     "id": "graveler",
     "dexId": 75,
     "name": "Graveler",
     "type": "rock/ground",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "golem"
+    }
   },
   "golem": {
     "id": "golem",
@@ -580,7 +736,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 77,
     "name": "Ponyta",
     "type": "fire",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 40,
+      "speciesId": "rapidash"
+    }
   },
   "rapidash": {
     "id": "rapidash",
@@ -594,7 +754,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 79,
     "name": "Slowpoke",
     "type": "water/psychic",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 37,
+      "speciesId": "slowbro"
+    }
   },
   "slowbro": {
     "id": "slowbro",
@@ -608,7 +772,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 81,
     "name": "Magnemite",
     "type": "electric/steel",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 30,
+      "speciesId": "magneton"
+    }
   },
   "magneton": {
     "id": "magneton",
@@ -629,7 +797,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 84,
     "name": "Doduo",
     "type": "normal/flying",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 31,
+      "speciesId": "dodrio"
+    }
   },
   "dodrio": {
     "id": "dodrio",
@@ -643,7 +815,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 86,
     "name": "Seel",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 34,
+      "speciesId": "dewgong"
+    }
   },
   "dewgong": {
     "id": "dewgong",
@@ -657,7 +833,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 88,
     "name": "Grimer",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 38,
+      "speciesId": "muk"
+    }
   },
   "muk": {
     "id": "muk",
@@ -671,7 +851,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 90,
     "name": "Shellder",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "cloyster"
+    }
   },
   "cloyster": {
     "id": "cloyster",
@@ -685,14 +869,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 92,
     "name": "Gastly",
     "type": "ghost/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 25,
+      "speciesId": "haunter"
+    }
   },
   "haunter": {
     "id": "haunter",
     "dexId": 93,
     "name": "Haunter",
     "type": "ghost/poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "gengar"
+    }
   },
   "gengar": {
     "id": "gengar",
@@ -713,7 +905,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 96,
     "name": "Drowzee",
     "type": "psychic",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 26,
+      "speciesId": "hypno"
+    }
   },
   "hypno": {
     "id": "hypno",
@@ -727,7 +923,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 98,
     "name": "Krabby",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 28,
+      "speciesId": "kingler"
+    }
   },
   "kingler": {
     "id": "kingler",
@@ -741,7 +941,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 100,
     "name": "Voltorb",
     "type": "electric",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 30,
+      "speciesId": "electrode"
+    }
   },
   "electrode": {
     "id": "electrode",
@@ -755,7 +959,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 102,
     "name": "Exeggcute",
     "type": "grass/psychic",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "exeggutor"
+    }
   },
   "exeggutor": {
     "id": "exeggutor",
@@ -769,7 +977,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 104,
     "name": "Cubone",
     "type": "ground",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 28,
+      "speciesId": "marowak"
+    }
   },
   "marowak": {
     "id": "marowak",
@@ -804,7 +1016,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 109,
     "name": "Koffing",
     "type": "poison",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 35,
+      "speciesId": "weezing"
+    }
   },
   "weezing": {
     "id": "weezing",
@@ -818,7 +1034,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 111,
     "name": "Rhyhorn",
     "type": "ground/rock",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 42,
+      "speciesId": "rhydon"
+    }
   },
   "rhydon": {
     "id": "rhydon",
@@ -853,7 +1073,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 116,
     "name": "Horsea",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 32,
+      "speciesId": "seadra"
+    }
   },
   "seadra": {
     "id": "seadra",
@@ -867,7 +1091,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 118,
     "name": "Goldeen",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 33,
+      "speciesId": "seaking"
+    }
   },
   "seaking": {
     "id": "seaking",
@@ -881,7 +1109,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 120,
     "name": "Staryu",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 36,
+      "speciesId": "starmie"
+    }
   },
   "starmie": {
     "id": "starmie",
@@ -944,7 +1176,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 129,
     "name": "Magikarp",
     "type": "water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 20,
+      "speciesId": "gyarados"
+    }
   },
   "gyarados": {
     "id": "gyarados",
@@ -972,7 +1208,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 133,
     "name": "Eevee",
     "type": "normal",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 25,
+      "speciesId": "jolteon"
+    }
   },
   "vaporeon": {
     "id": "vaporeon",
@@ -1007,7 +1247,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 138,
     "name": "Omanyte",
     "type": "rock/water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 40,
+      "speciesId": "omastar"
+    }
   },
   "omastar": {
     "id": "omastar",
@@ -1021,7 +1265,11 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 140,
     "name": "Kabuto",
     "type": "rock/water",
-    "rarity": "COMMON"
+    "rarity": "COMMON",
+    "evolution": {
+      "level": 40,
+      "speciesId": "kabutops"
+    }
   },
   "kabutops": {
     "id": "kabutops",
@@ -1070,14 +1318,22 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "dexId": 147,
     "name": "Dratini",
     "type": "dragon",
-    "rarity": "RARE"
+    "rarity": "RARE",
+    "evolution": {
+      "level": 30,
+      "speciesId": "dragonair"
+    }
   },
   "dragonair": {
     "id": "dragonair",
     "dexId": 148,
     "name": "Dragonair",
     "type": "dragon",
-    "rarity": "RARE"
+    "rarity": "RARE",
+    "evolution": {
+      "level": 55,
+      "speciesId": "dragonite"
+    }
   },
   "dragonite": {
     "id": "dragonite",

@@ -66,10 +66,18 @@ async function openGacha(userId: string) {
   // Dynamically load data so we don't break server actions
   const { POKEMON_DATA } = await import("@/lib/pokemon-data");
   
-  const allPokemon = Object.values(POKEMON_DATA);
-  const commons = allPokemon.filter(p => p.rarity === "COMMON").map(p => p.id);
-  const rares = allPokemon.filter(p => p.rarity === "RARE").map(p => p.id);
-  const legendaries = allPokemon.filter(p => p.rarity === "LEGENDARY").map(p => p.id);
+  // Filter out any pokemon that is the result of an evolution
+  const allEvolutions = new Set(
+    Object.values(POKEMON_DATA)
+      .map(p => p.evolution?.speciesId)
+      .filter(Boolean)
+  );
+
+  const basePokemon = Object.values(POKEMON_DATA).filter(p => !allEvolutions.has(p.id));
+
+  const commons = basePokemon.filter(p => p.rarity === "COMMON").map(p => p.id);
+  const rares = basePokemon.filter(p => p.rarity === "RARE").map(p => p.id);
+  const legendaries = basePokemon.filter(p => p.rarity === "LEGENDARY").map(p => p.id);
 
   // Weighted RNG: 70% Common, 25% Rare, 5% Legendary
   const roll = Math.random();
