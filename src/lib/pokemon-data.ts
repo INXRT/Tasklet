@@ -252,10 +252,6 @@ export const POKEMON_DATA: Record<string, PokemonMeta> = {
     "evolution": {
       "level": 25,
       "speciesId": "raichu"
-    },
-    "evolution": {
-      "level": 25,
-      "speciesId": "raichu"
     }
   },
   "raichu": {
