@@ -17,7 +17,7 @@
 ### 📅 The Dashboard
 Manage your daily, weekly, and monthly tasks in a sleek, glassmorphic UI. Switch seamlessly between the beautiful List view and the interactive Monthly Calendar view to plan your life.
 
-> *(Place your dashboard overview video here)*
+> 
 > <br/>
 > ![Dashboard Demo](public/docs/dashboard.gif)
 
@@ -29,7 +29,7 @@ Create detailed tasks with durations and recurrence rules.
 ### 🐾 Pokémon Roster & Inventory
 Unlock new Pokémon companions and switch between them! Spend your hard-earned task coins in the Shop to buy Food and items, then use them from your Inventory to keep your Pokémon happy.
 
-> *(Place your Pokémon Roster & Shop video here)*
+> 
 > <br/>
 > ![Pokémon & Shop Demo](public/docs/onboarding.gif)
 
