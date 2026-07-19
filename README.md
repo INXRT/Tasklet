@@ -19,7 +19,7 @@ Manage your daily, weekly, and monthly tasks in a sleek, glassmorphic UI. Switch
 
 > *(Place your dashboard overview video here)*
 > <br/>
-> [▶️ Watch Dashboard Demo](./public/docs/dashboard.webm)
+> ![Dashboard Demo](./public/docs/dashboard.gif)
 
 ### ✅ Task Management & Punishments
 Create detailed tasks with durations and recurrence rules. 
@@ -28,14 +28,14 @@ Create detailed tasks with durations and recurrence rules.
 
 > *(Place your task management and missed task video here)*
 > <br/>
-> [▶️ Watch Tasks Demo](./public/docs/tasks.webm)
+> ![Tasks Demo](./public/docs/tasks.gif)
 
 ### 🐾 Pokémon Roster & Inventory
 Unlock new Pokémon companions and switch between them! Spend your hard-earned task coins in the Shop to buy Food and items, then use them from your Inventory to keep your Pokémon happy.
 
 > *(Place your Pokémon Roster & Shop video here)*
 > <br/>
-> [▶️ Watch Pokémon & Shop Demo](./public/docs/onboarding.webm)
+> ![Pokémon & Shop Demo](./public/docs/onboarding.gif)
 
 ---
 
