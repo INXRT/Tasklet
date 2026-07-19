@@ -46,7 +46,7 @@ export default function RootLayout({
           
           {/* The Desktop environment container */}
           <ScaleWrapper targetWidth={1280} targetHeight={800} padding={24}>
-            <div className="w-full h-full flex flex-col">
+            <div className="w-full min-h-full lg:h-full flex flex-col">
               {children}
             </div>
           </ScaleWrapper>

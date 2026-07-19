@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useOptimistic, useTransition } from "react";
-import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store, Backpack, Settings, MoreVertical, Edit2, Trash2 } from "lucide-react";
-import { format, addDays, subDays, isSameDay } from "date-fns";
+import { Calendar as CalendarIcon, List, Plus, Activity, Coins, CheckCircle, Circle, Store, Backpack, Settings, MoreVertical, Edit2, Trash2, ChevronLeft, ChevronRight, XCircle } from "lucide-react";
+import { format, addDays, subDays, isSameDay, addMonths, subMonths } from "date-fns";
 import { MobileDrawer } from "@/components/ui/MobileDrawer";
 import { TaskModal } from "@/components/ui/TaskModal";
 import { CalendarView } from "@/components/ui/CalendarView";
@@ -218,58 +218,93 @@ export function MobileDashboardClient({ user, activePokemon }: { user: any; acti
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none lg:hidden" />
 
         {/* Header */}
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 relative z-10 border-b border-white/10 pb-6 gap-6">
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <button 
-              onClick={() => setIsMobileTrainerOpen(true)}
-              className="lg:hidden p-2 sm:p-3 rounded-full glass-panel hover:bg-white/10 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)] border border-white/10 flex items-center justify-center group relative overflow-hidden active:scale-95"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <PokeballIcon className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md" />
-            </button>
-            <h1 className="text-3xl sm:text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 relative z-10 border-b border-white/10 pb-6 gap-6">
+          
+          {/* Top Row: Title, Pokeball, Streak, New Task */}
+          <div className="flex items-center justify-between w-full xl:w-auto gap-2 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+              <button 
+                onClick={() => setIsMobileTrainerOpen(true)}
+                className="lg:hidden p-2 sm:p-3 rounded-full glass-panel hover:bg-white/10 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)] border border-white/10 flex items-center justify-center group relative overflow-hidden active:scale-95 shrink-0"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <PokeballIcon className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md" />
+              </button>
+              <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight drop-shadow-md">Schedule</h1>
+            </div>
             
-            {/* Daily Progress & Streak Ring */}
-            <DailyProgressRing 
-              completed={todaysTasks.filter(t => t.isCompleted).length} 
-              total={todaysTasks.length} 
-              streak={user.streak} 
-            />
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+              {/* Daily Progress & Streak Ring */}
+              <DailyProgressRing 
+                completed={todaysTasks.filter(t => t.isCompleted).length} 
+                total={todaysTasks.length} 
+                streak={user.streak} 
+              />
+              
+              <button 
+                onClick={() => { setTaskToEdit(null); setIsModalOpen(true); }}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 sm:px-6 sm:py-2.5 text-black rounded-full transition-all active:scale-95 skeumorphic-btn hover:brightness-110 font-medium text-xs sm:text-sm shrink-0"
+                style={{ background: 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)' }}
+              >
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden min-[375px]:inline">New Task</span>
+              </button>
+            </div>
           </div>
           
-          <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto justify-between xl:justify-end">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto justify-center xl:justify-end">
             {/* Date Changer Bar */}
-            <div className="flex items-center gap-2 bg-black/40 rounded-full p-1.5 border border-white/5 shadow-inner overflow-hidden order-last xl:order-none">
-              <AnimatePresence mode="popLayout">
-                {[subDays(selectedDate, 2), subDays(selectedDate, 1), selectedDate, addDays(selectedDate, 1), addDays(selectedDate, 2)].map((date, i) => {
-                  const isSelected = i === 2; // the center one is always selectedDate
-                  return (
-                    <motion.button
-                      layout
-                      initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                      animate={{ opacity: 1, scale: isSelected ? 1.1 : 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.8, x: -20 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      key={date.toISOString()}
-                      onClick={() => handleDateChange(date)}
-                      className={`flex flex-col items-center justify-center w-12 h-14 rounded-full transition-colors duration-300 shrink-0 ${
-                        isSelected 
-                          ? "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] text-black" 
-                          : "text-zinc-400 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      <span className={`text-[9px] uppercase tracking-widest ${isSelected ? "text-black/70 font-bold" : "text-zinc-500 font-medium"}`}>
-                        {format(date, "EEE")}
-                      </span>
-                      <span className={`text-lg mt-0.5 ${isSelected ? "font-bold" : "font-semibold"}`}>{format(date, "d")}</span>
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <div className="flex items-center justify-between px-3 bg-black/20 rounded-full py-1 border border-white/5 mx-auto sm:mx-0 min-w-[200px]">
+                <button 
+                  onClick={() => handleDateChange(subMonths(selectedDate, 1))} 
+                  className="p-1 hover:text-white text-zinc-400 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-300 font-medium">
+                  {format(selectedDate, 'MMMM yyyy')}
+                </span>
+                <button 
+                  onClick={() => handleDateChange(addMonths(selectedDate, 1))} 
+                  className="p-1 hover:text-white text-zinc-400 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              
+              <div className="flex items-center justify-between sm:justify-start gap-1 sm:gap-2 bg-black/40 rounded-full p-1.5 border border-white/5 shadow-inner overflow-hidden w-full sm:w-auto">
+                <AnimatePresence mode="popLayout">
+                  {[subDays(selectedDate, 2), subDays(selectedDate, 1), selectedDate, addDays(selectedDate, 1), addDays(selectedDate, 2)].map((date, i) => {
+                    const isSelected = i === 2; // the center one is always selectedDate
+                    return (
+                      <motion.button
+                        layout
+                        initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                        animate={{ opacity: 1, scale: isSelected ? 1.1 : 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, x: -20 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        key={date.toISOString()}
+                        onClick={() => handleDateChange(date)}
+                        className={`flex flex-col items-center justify-center flex-1 sm:flex-none sm:w-12 h-14 rounded-full transition-colors duration-300 shrink-0 ${
+                          isSelected 
+                            ? "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] text-black" 
+                            : "text-zinc-400 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <span className={`text-[9px] uppercase tracking-widest ${isSelected ? "text-black/70 font-bold" : "text-zinc-500 font-medium"}`}>
+                          {format(date, "EEE")}
+                        </span>
+                        <span className={`text-lg mt-0.5 ${isSelected ? "font-bold" : "font-semibold"}`}>{format(date, "d")}</span>
+                      </motion.button>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center p-1 rounded-full bg-black/40 border border-white/10 hidden md:flex shadow-inner">
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center p-1 rounded-full bg-black/40 border border-white/10 shadow-inner">
                 <button 
                   onClick={() => setView("calendar")}
                   className={`p-2.5 rounded-full transition-all ${view === "calendar" ? "skeumorphic-btn-active text-white" : "text-zinc-500 hover:text-zinc-300"}`}
@@ -283,15 +318,6 @@ export function MobileDashboardClient({ user, activePokemon }: { user: any; acti
                   <List className="w-4 h-4" />
                 </button>
               </div>
-              
-              <button 
-                onClick={() => { setTaskToEdit(null); setIsModalOpen(true); }}
-                className="flex items-center gap-2 px-6 py-2.5 text-black rounded-full transition-all active:scale-95 skeumorphic-btn hover:brightness-110 font-medium text-sm"
-                style={{ background: 'linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%)' }}
-              >
-                <Plus className="w-4 h-4" />
-                New Task
-              </button>
             </div>
           </div>
         </div>
@@ -326,15 +352,17 @@ export function MobileDashboardClient({ user, activePokemon }: { user: any; acti
                     <motion.div 
                       layout
                       key={task.id} 
-                      className={`relative p-5 rounded-2xl transition-all duration-300 flex justify-between items-center group active:scale-[0.98] overflow-hidden hover:z-20 ${
-                        task.isCompleted 
+                      className={`relative p-5 rounded-2xl transition-all duration-300 flex justify-between items-center group active:scale-[0.98] hover:z-20 ${
+                        task.isMissed
+                          ? "bg-red-500/5 border border-red-500/20 shadow-none"
+                          : task.isCompleted 
                           ? "bg-white/[0.02] border border-white/[0.02] opacity-50 shadow-none" 
                           : "bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.3)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] hover:border-white/20 hover:-translate-y-0.5"
                       }`}
                     >
                       {/* Optional Highlight Glow when uncompleted */}
-                      {!task.isCompleted && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/[0.02] to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                      {!task.isCompleted && !task.isMissed && (
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/0 via-emerald-500/[0.02] to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                       )}
 
                       <div className="flex items-center gap-4 relative z-10">
@@ -343,16 +371,26 @@ export function MobileDashboardClient({ user, activePokemon }: { user: any; acti
                           className={`relative flex items-center justify-center w-7 h-7 rounded-full transition-all duration-300 shrink-0 ${
                             task.isCompleted 
                               ? "text-emerald-400 bg-emerald-400/10 shadow-[0_0_12px_rgba(52,211,153,0.3)]" 
+                              : task.isMissed
+                              ? "text-red-400 bg-red-400/10 border border-red-500/30 group-hover:bg-red-500/20"
                               : "text-zinc-500 bg-black/40 border border-white/10 group-hover:border-emerald-400/30 group-hover:text-emerald-400/80"
                           }`}
                         >
-                          {task.isCompleted ? <CheckCircle className="w-5 h-5" /> : <Circle className="w-5 h-5 opacity-50" />}
+                          {task.isCompleted ? <CheckCircle className="w-5 h-5" /> : task.isMissed ? <XCircle className="w-5 h-5" /> : <Circle className="w-5 h-5 opacity-50" />}
                         </button>
                         <div>
-                          <h4 className={`text-lg font-medium tracking-tight transition-colors duration-300 ${task.isCompleted ? "text-white/40 line-through" : "text-white/90 drop-shadow-sm group-hover:text-white"}`}>
+                          <h4 className={`text-lg font-medium tracking-tight transition-colors duration-300 ${task.isCompleted ? "text-white/40 line-through" : task.isMissed ? "text-red-400/80" : "text-white/90 drop-shadow-sm group-hover:text-white"}`}>
                             {task.title}
                           </h4>
                           <div className="flex items-center gap-2 mt-1 opacity-80">
+                            {task.isMissed && (
+                              <>
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase bg-red-500/20 text-red-400 border border-red-500/20">
+                                  MISSED
+                                </span>
+                                <span className="text-zinc-500 text-[10px]">•</span>
+                              </>
+                            )}
                             <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-widest uppercase bg-black/30 text-zinc-300 border border-white/5">
                               {format(new Date(task.dueDate), "MMM do")}
                             </span>
@@ -402,7 +440,7 @@ export function MobileDashboardClient({ user, activePokemon }: { user: any; acti
             </AnimatePresence>
           ) : (
             <div className="h-full min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-inner mb-24">
-              <CalendarView tasks={user.tasks} />
+              <CalendarView tasks={user.tasks} selectedDate={selectedDate} />
             </div>
           )}
         </div>
@@ -538,6 +576,7 @@ export function MobileDashboardClient({ user, activePokemon }: { user: any; acti
         onClose={() => { setIsModalOpen(false); setTaskToEdit(null); }} 
         userId={user.id} 
         initialData={taskToEdit}
+        defaultDate={selectedDate}
       />
 
       <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} userId={user.id} userCoins={user.coins} />

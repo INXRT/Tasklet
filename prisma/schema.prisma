@@ -87,6 +87,7 @@ model Task {
   description  String?
   
   isCompleted  Boolean   @default(false)
+  isMissed     Boolean   @default(false)
   dueDate      DateTime
   duration     Int       @default(60)
   urgency      String    @default("LOW")

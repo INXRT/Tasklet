@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="./public/pokequest.png" alt="PokéQuest Logo" width="300" />
+  
+  # PokéQuest (Tasklet)
+  
+  **Gamify your productivity.** Complete real-life tasks, earn coins and XP, collect Pokémon companions, and maintain your streak. But beware—miss your tasks and you'll break your streak and upset your companions!
+  
+  [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![Prisma](https://img.shields.io/badge/Prisma-ORM-blue?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+</div>
 
-## Getting Started
+---
 
-First, run the development server:
+## 🎮 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 📅 The Dashboard
+Manage your daily, weekly, and monthly tasks in a sleek, glassmorphic UI. Switch seamlessly between the beautiful List view and the interactive Monthly Calendar view to plan your life.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> *(Place your dashboard overview video here)*
+> <br/>
+> `<video src="./public/docs/dashboard.webm" width="600" autoplay loop muted />`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ✅ Task Management & Punishments
+Create detailed tasks with durations and recurrence rules. 
+- **Reward:** Completing a task grants you Coins and XP to level up your Pokémon!
+- **Punishment:** Miss a task, and your streak resets to 0 while your active Pokémon becomes sad. The UI will distinctly highlight your failures so you stay accountable.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> *(Place your task management and missed task video here)*
+> <br/>
+> `<video src="./public/docs/tasks.webm" width="600" autoplay loop muted />`
 
-## Learn More
+### 🐾 Pokémon Roster & Inventory
+Unlock new Pokémon companions and switch between them! Spend your hard-earned task coins in the Shop to buy Food and items, then use them from your Inventory to keep your Pokémon happy.
 
-To learn more about Next.js, take a look at the following resources:
+> *(Place your Pokémon Roster & Shop video here)*
+> <br/>
+> `<video src="./public/docs/onboarding.webm" width="600" autoplay loop muted />`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Tech Stack
 
-## Deploy on Vercel
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Database:** PostgreSQL managed via [Prisma ORM](https://www.prisma.io/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) with custom Skeuomorphic & Glassmorphic utilities
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+- **Authentication:** NextAuth.js (Google Provider)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database (Local or hosted like Supabase/Neon)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/pokequest.git
+   cd pokequest
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Environment Variables**
+   Create a `.env` file in the root directory and add the following:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/pokequest"
+   NEXTAUTH_SECRET="your-super-secret-key"
+   NEXTAUTH_URL="http://localhost:3000"
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   ```
+
+4. **Initialize the Database**
+   Push the Prisma schema to your database and generate the client.
+   ```bash
+   npx prisma db push
+   ```
+
+5. **Run the Development Server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the app!
+
+---
+
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/pokequest/issues).

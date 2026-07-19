@@ -5,10 +5,13 @@ import { getPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function selectStarterPokemon(userId: string, pokemonId: string) {
+  const prisma = getPrisma();
+  
+  if (!userId) return { error: "Unauthorized" };
+
   try {
-    const prisma = getPrisma();
-    let user = await prisma.user.findUnique({
-      where: { id: userId }
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
     });
     
     if (!user) {

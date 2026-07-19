@@ -8,14 +8,17 @@ import { MultiDatePicker } from "@/components/ui/MultiDatePicker";
 import { createPortal } from "react-dom";
 import { ScaleWrapper } from "@/components/ui/ScaleWrapper";
 
+import { format } from "date-fns";
+
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
   initialData?: any;
+  defaultDate?: Date;
 }
 
-export function TaskModal({ isOpen, onClose, userId, initialData }: TaskModalProps) {
+export function TaskModal({ isOpen, onClose, userId, initialData, defaultDate }: TaskModalProps) {
   const [isPending, startTransition] = useTransition();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -32,18 +35,23 @@ export function TaskModal({ isOpen, onClose, userId, initialData }: TaskModalPro
 
   // Pre-fill form when editing
   useEffect(() => {
-    if (initialData && isOpen) {
-      setTitle(initialData.title);
-      setDuration(initialData.duration.toString());
-      
-      const d = new Date(initialData.dueDate);
-      setDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
-      setTime(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`);
-      
-      setRepeatMode("NONE"); // Only edit single instance as discussed
-      setCustomDates([]);
+    if (isOpen) {
+      if (initialData) {
+        setTitle(initialData.title);
+        setDuration(initialData.duration.toString());
+        
+        const d = new Date(initialData.dueDate);
+        setDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+        setTime(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`);
+        
+        setRepeatMode("NONE"); // Only edit single instance as discussed
+        setCustomDates([]);
+      } else {
+        const d = defaultDate || new Date();
+        setDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+      }
     }
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, defaultDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

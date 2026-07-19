@@ -1,9 +1,9 @@
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, startOfMonth, endOfMonth, isSameMonth } from "date-fns";
 
-export function CalendarView({ tasks }: { tasks: any[] }) {
+export function CalendarView({ tasks, selectedDate = new Date() }: { tasks: any[], selectedDate?: Date }) {
   const today = new Date();
-  const start = startOfWeek(startOfMonth(today));
-  const end = endOfWeek(endOfMonth(today));
+  const start = startOfWeek(startOfMonth(selectedDate));
+  const end = endOfWeek(endOfMonth(selectedDate));
   
   const days = eachDayOfInterval({ start, end });
 
@@ -20,7 +20,7 @@ export function CalendarView({ tasks }: { tasks: any[] }) {
       <div className="flex-1 grid grid-cols-7 grid-rows-5 gap-px bg-white/5">
         {days.map((day, i) => {
           const dayTasks = tasks.filter(t => isSameDay(new Date(t.dueDate), day));
-          const isCurrentMonth = isSameMonth(day, today);
+          const isCurrentMonth = isSameMonth(day, selectedDate);
           const isToday = isSameDay(day, today);
           
           return (

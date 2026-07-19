@@ -3,19 +3,23 @@ import { redirect } from "next/navigation";
 import { DashboardWrapper } from "./DashboardWrapper";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { processMissedTasks } from "@/actions/punishment";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  
-  if (!session?.user?.id) {
+  let userId = session?.user?.id;
+
+  const prisma = getPrisma();
+
+  if (!userId) {
     redirect("/login");
   }
 
-  const prisma = getPrisma();
+  await processMissedTasks(userId);
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     include: {
       tasks: {
         orderBy: { dueDate: "asc" }
@@ -38,10 +42,8 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col z-10 relative overflow-hidden">
+    <div className="w-full min-h-full lg:h-full flex flex-col z-10 relative lg:overflow-hidden">
       <DashboardWrapper user={user} activePokemon={activePokemon} />
     </div>
   );
 }
-
-
