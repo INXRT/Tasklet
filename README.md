@@ -1,7 +1,7 @@
 <div align="center">
   <img src="public/pokequest.png" alt="PokéQuest Logo" width="300" />
   
-  # PokéQuest (Tasklet)
+  # PokéQuest
   
   **Gamify your productivity.** Complete real-life tasks, earn coins and XP, collect Pokémon companions, and maintain your streak. But beware—miss your tasks and you'll break your streak and upset your companions!
   
