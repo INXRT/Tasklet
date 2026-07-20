@@ -15,7 +15,7 @@
 ## 🎮 Features
 
 ### 📅 The Dashboard
-Manage your daily, weekly, and monthly tasks in a sleek, glassmorphic UI. Switch seamlessly between the beautiful List view and the interactive Monthly Calendar view to plan your life.
+Manage your daily, weekly, and monthly tasks in a sleek, liquid glass UI. Switch seamlessly between the beautiful List view and the interactive Monthly Calendar view to plan your life.
 
 
 
